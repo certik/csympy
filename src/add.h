@@ -12,7 +12,7 @@
 
 namespace CSymPy {
 
-class Add : public Basic {
+class Add : public Basic, public BaseVisitable<Add> {
 public: // TODO: make this private
     RCP<const Number> coef_; //! The coefficient (e.g. `2` in `2+x+y`)
     umap_basic_num dict_; //! The dictionary of the rest (e.g. `x+y` in `2+x+y`)
@@ -60,8 +60,6 @@ public:
     virtual RCP<const Basic> subs(const map_basic_basic &subs_dict) const;
 
     virtual vec_basic get_args() const;
-
-    virtual void accept(Visitor &v) const;
 };
 
 //! \return Add made from `a + b`

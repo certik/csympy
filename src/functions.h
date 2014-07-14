@@ -15,7 +15,6 @@
 namespace CSymPy {
 
 class Function : public Basic {
-    virtual void accept(Visitor &v) const;
 };
 
 class TrigFunction : public Function {
@@ -495,8 +494,6 @@ public:
     }
     bool is_canonical(const RCP<const Basic> &arg, const vec_basic &x) const;
     virtual RCP<const Basic> diff(const RCP<const Symbol> &x) const;
-
-    virtual void accept(Visitor &v) const;
 };
 
 class HyperbolicFunction : public Function {

@@ -14,6 +14,7 @@ inline bool Basic::__neq__(const Basic &o) const
 {
     return !(this->__eq__(o));
 }
+
 //! \return true if  `a` equal `b`
 inline bool eq(const RCP<const Basic> &a, const RCP<const Basic> &b)
 {

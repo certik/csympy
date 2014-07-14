@@ -10,54 +10,69 @@
 
 namespace CSymPy {
 
+// It should be possible to simplify this using the approach described at:
+// http://stackoverflow.com/a/11802080/479532
+// http://stackoverflow.com/a/7877397/479532
+
 class Visitor {
 public:
-    // It should be possible to simplify this using the approach described at:
-    // http://stackoverflow.com/a/11802080/479532
-    // http://stackoverflow.com/a/7877397/479532
-    virtual void visit(const Symbol &) = 0;
-    virtual void visit(const Add &) = 0;
-    virtual void visit(const Mul &) = 0;
-    virtual void visit(const Pow &) = 0;
-    virtual void visit(const Number &) = 0;
-    virtual void visit(const Function &) = 0;
-    virtual void visit(const Log &) = 0;
-    virtual void visit(const Derivative &) = 0;
+    virtual ~Visitor() {};
 };
 
-class HasVisitor : public Visitor {
+template <class T>
+class VisitorType {
+public:
+    virtual void visit(const T &) = 0;
+};
+
+class HasVisitor : public Visitor,
+                   public VisitorType<Symbol>,
+                   public VisitorType<Add>,
+                   public VisitorType<Mul>,
+                   public VisitorType<Pow>,
+                   public VisitorType<Number>,
+                   public VisitorType<Function>,
+                   public VisitorType<Log>,
+                   public VisitorType<Derivative>
+{
 private:
     RCP<const Symbol> x_;
     bool has_;
 public:
     // TODO: allow to return true/false from the visit() methods, and if it
     // returns false, stop the traversal in pre/postorder_traversal().
-    virtual void visit(const Symbol &x) {
+    void visit(const Symbol &x) {
         if (x_->__eq__(x)) has_ = true;
     }
-    virtual void visit(const Add &) {
+    void visit(const Add &) {
     }
-    virtual void visit(const Mul &) {
+    void visit(const Mul &) {
     }
-    virtual void visit(const Pow &) {
+    void visit(const Pow &) {
     }
-    virtual void visit(const Number &) {
+    void visit(const Number &) {
     }
-    virtual void visit(const Function &) {
+    void visit(const Function &) {
     }
-    virtual void visit(const Log &) {
+    void visit(const Log &) {
     }
-    virtual void visit(const Derivative &) {
+    void visit(const Derivative &) {
     }
-    bool apply(const Basic &b, const RCP<const Symbol> &x) {
+    template <typename T>
+    bool apply(const T &b, const RCP<const Symbol> &x) {
         x_ = x;
         has_ = false;
-        b.preorder_traversal(*this);
+        static_cast<const BaseVisitable<T>&>(b).preorder_traversal(*this);
         return has_;
     }
 };
 
-bool has_symbol(const Basic &b, const RCP<const Symbol> &x);
+template <typename T>
+bool has_symbol(const T &b, const RCP<const Symbol> &x) {
+    HasVisitor v;
+    return v.apply(b, x);
+}
+
 
 } // CSymPy
 

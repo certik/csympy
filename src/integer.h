@@ -15,7 +15,7 @@
 namespace CSymPy {
 
 //! Integer Class
-class Integer : public Number {
+class Integer : public Number, public BaseVisitable<Integer> {
 public:
     //! `i` : object of `mpz_class`
     mpz_class i;

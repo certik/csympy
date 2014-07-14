@@ -29,6 +29,31 @@ namespace CSymPy {
 class Visitor;
 class Symbol;
 
+template <class Visitable>
+class BaseVisitable {
+public:
+    template <typename T>
+    void accept(T & visitor) const {
+        visitor.visit(static_cast<const Visitable &>(*this));
+    }
+
+    template <typename T>
+    void preorder_traversal(T &v) const {
+        accept(v);
+        for (auto &p: static_cast<const Visitable &>(*this).get_args()) {
+            const Visitable &t = dynamic_cast<const Visitable&>(*p);
+            static_cast<const BaseVisitable<Visitable>&>(t).preorder_traversal(v);
+        }
+    }
+    template <typename T>
+    void postorder_traversal(T &v) const {
+        for (auto &p: static_cast<const Visitable &>(*this).get_args())
+            static_cast<const BaseVisitable<Visitable>&>(*p).postorder_traversal(v);
+        accept(v);
+    }
+};
+
+
 /*!
     Any Basic class can be used in a "dictionary", due to the methods:
         
@@ -156,11 +181,6 @@ public:
 
     //! Returns the list of arguments
     virtual vec_basic get_args() const = 0;
-
-    virtual void accept(Visitor &v) const = 0;
-
-    virtual void preorder_traversal(Visitor &v) const;
-    virtual void postorder_traversal(Visitor &v) const;
 };
 
 //! Our hash:

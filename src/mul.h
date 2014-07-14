@@ -11,7 +11,7 @@
 
 namespace CSymPy {
 
-class Mul : public Basic {
+class Mul : public Basic, public BaseVisitable<Mul> {
 public: // TODO: make this private
     RCP<const Number> coef_; //! The coefficient (e.g. `2` in `2*x*y`)
     map_basic_basic dict_;   //! the dictionary of the rest (e.g. `x*y` in `2*x*y`)
@@ -61,8 +61,6 @@ public:
     virtual RCP<const Basic> subs(const map_basic_basic &subs_dict) const;
 
     virtual vec_basic get_args() const;
-
-    virtual void accept(Visitor &v) const;
 };
 //! Multiplication
 RCP<const Basic> mul(const RCP<const Basic> &a,
