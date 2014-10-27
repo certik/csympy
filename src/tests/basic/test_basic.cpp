@@ -600,6 +600,24 @@ void test_has()
     assert(!has_symbol(*r1, z));
 }
 
+void test_coeff()
+{
+    RCP<const Basic> r1;
+    RCP<const Symbol> x, y, z;
+    x = symbol("x");
+    y = symbol("y");
+    z = symbol("z");
+    r1 = add(add(x, y), z);
+    assert(eq(coeff(*x, x, one), one));
+    assert(eq(coeff(*r1, x, one), one));
+    assert(eq(coeff(*r1, y, one), one));
+    assert(eq(coeff(*r1, z, one), one));
+    assert(eq(coeff(*r1, z, integer(2)), zero));
+    assert(eq(coeff(*z, z, integer(2)), zero));
+    assert(eq(coeff(*r1, z, zero), zero));
+    assert(eq(coeff(*z, z, zero), zero));
+}
+
 void test_eval_double()
 {
     RCP<const Basic> r1, r2, r3;
@@ -659,6 +677,8 @@ int main(int argc, char* argv[])
     test_complex();
 
     test_has();
+
+    test_coeff();
 
     test_eval_double();
 
