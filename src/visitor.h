@@ -127,11 +127,6 @@ private:
     RCP<const Integer> n_;
     RCP<const Basic> coeff_;
 public:
-    void visit(const Add &x) {
-        RCP<const Basic> coeff = zero;
-        for (auto &p: x.get_args()) coeff = add(coeff, apply(*p, x_, n_));
-        coeff_ = coeff;
-    }
     RCP<const Basic> apply(const Basic &b, const RCP<const Symbol> &x,
             const RCP<const Integer> &n) {
         x_ = x;
@@ -139,6 +134,11 @@ public:
         coeff_ = zero;
         b.accept(*this);
         return coeff_;
+    }
+    void visit(const Add &x) {
+        RCP<const Basic> coeff = zero;
+        for (auto &p: x.get_args()) coeff = add(coeff, apply(*p, x_, n_));
+        coeff_ = coeff;
     }
     virtual void visit(const Symbol &x) {
         if (eq(n_, one) && x_->__eq__(x)) {
