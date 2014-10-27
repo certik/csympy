@@ -140,7 +140,13 @@ public:
         b.accept(*this);
         return coeff_;
     }
-    virtual void visit(const Symbol &) { };
+    virtual void visit(const Symbol &x) {
+        if (eq(n_, one) && x_->__eq__(x)) {
+            coeff_ = one;
+        } else {
+            coeff_ = zero;
+        }
+    }
     virtual void visit(const Mul &) { };
     virtual void visit(const Pow &) { };
     virtual void visit(const Integer &) { };
