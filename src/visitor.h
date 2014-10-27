@@ -148,7 +148,13 @@ public:
         }
     }
     virtual void visit(const Mul &) { };
-    virtual void visit(const Pow &) { };
+    virtual void visit(const Pow &x) {
+        if (eq(x_, x.base_) && eq(n_, x.exp_)) {
+            coeff_ = one;
+        } else {
+            coeff_ = zero;
+        }
+    }
     virtual void visit(const Integer &) { };
     virtual void visit(const Rational &) { };
     virtual void visit(const Complex &) { };

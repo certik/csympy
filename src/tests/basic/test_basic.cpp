@@ -616,6 +616,11 @@ void test_coeff()
     assert(eq(coeff(*z, z, integer(2)), zero));
     assert(eq(coeff(*r1, z, zero), zero));
     assert(eq(coeff(*z, z, zero), zero));
+
+    r1 = pow(x, integer(2));
+    assert(eq(coeff(*r1, x, integer(2)), one));
+    assert(eq(coeff(*r1, y, integer(2)), zero));
+    assert(eq(coeff(*r1, x, one), zero));
 }
 
 void test_eval_double()
