@@ -192,6 +192,20 @@ public:
     virtual void visit(const UpperGamma &) { };
 };
 
+/*
+ * The 'coeff' function returns the coefficient of x^n in the expression 'b'.
+ *
+ * The expression 'b' is not manipulated in any way, so you can get different
+ * results depending on whether you expand the expression 'b' or not
+ * beforehand. Examples:
+ *
+ * ((x+1)^2).coeff(x, 1) = 0
+ * ((x+1)^2).coeff(x, 2) = 0
+ * ((x+1)^2).coeff(x+1, 2) = 1
+ * (x^2 + 2*x + 1).coeff(x, 1) = 2
+ * (x^2 + 2*x + 1).coeff(x, 2) = 1
+ * (x^2 + 2*x + 1).coeff(x+1, 2) = 0
+ */
 RCP<const Basic> coeff(const Basic &b, const RCP<const Symbol> &x,
         const RCP<const Integer> &n);
 
