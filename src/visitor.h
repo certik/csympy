@@ -147,7 +147,12 @@ public:
             coeff_ = zero;
         }
     }
-    virtual void visit(const Mul &) { };
+    virtual void visit(const Mul &x) {
+        if (is_a<Symbol>(*coeff_)) {
+        } else {
+            throw runtime_error("Not implemented yet.");
+        }
+    };
     virtual void visit(const Pow &x) {
         if (eq(x_, x.base_) && eq(n_, x.exp_)) {
             coeff_ = one;
