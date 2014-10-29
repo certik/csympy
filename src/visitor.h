@@ -149,6 +149,17 @@ public:
     }
     virtual void visit(const Mul &x) {
         if (is_a<Symbol>(*coeff_)) {
+            map_basic_basic d = x.dict_; // make a copy
+            auto it = d.find(t);
+            if (it == d.end()) {
+                coeff_ = zero;
+            } else {
+                if (eq(it->second, n_)) {
+                    d.erase(it);
+                } else {
+                    coeff_ = zero;
+                }
+            }
         } else {
             throw runtime_error("Not implemented yet.");
         }
