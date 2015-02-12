@@ -26,6 +26,7 @@ typedef std::unordered_map<RCP<const Basic>, RCP<const Basic>,
         RCPBasicHash, RCPBasicKeyEq> umap_basic_basic;
 
 typedef std::vector<int> vec_int;
+typedef std::array<int, 4> vec_int4;
 typedef std::vector<RCP<const Basic>> vec_basic;
 typedef std::vector<RCP<const Integer>> vec_integer;
 typedef std::map<vec_int, long long int> map_vec_int;
@@ -70,7 +71,7 @@ int vec_basic_compare(const vec_basic &a, const vec_basic &b);
 //! Part of umap_vec_mpz:
 typedef struct
 {
-    inline std::size_t operator() (const vec_int &k) const {
+    inline std::size_t operator() (const vec_int4 &k) const {
         std::size_t h = 0;
         for (auto &p: k) {
             h = (h << 4) + p;
@@ -82,12 +83,12 @@ typedef struct
 typedef struct
 {
     //! \return true if `x==y`
-    inline bool operator() (const vec_int &x, const vec_int &y) const {
+    inline bool operator() (const vec_int4 &x, const vec_int4 &y) const {
         return x == y;
     }
 } vec_int_eq;
 
-typedef std::unordered_map<vec_int, mpz_class,
+typedef std::unordered_map<vec_int4, mpz_class,
         vec_int_hash, vec_int_eq> umap_vec_mpz;
 
 } // CSymPy

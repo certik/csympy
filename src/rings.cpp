@@ -14,13 +14,13 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
     if (is_a<Add>(*p)) {
         int n = syms.size();
         const umap_basic_num &d = rcp_static_cast<const Add>(p)->dict_;
-        vec_int exp;
+        vec_int4 exp;
         mpz_class coef;
         for (auto &p: d) {
             if (!is_a<Integer>(*p.second))
                     throw std::runtime_error("Not implemented.");
             coef = rcp_static_cast<const Integer>(p.second)->as_mpz();
-            exp.assign(n, 0); // Initialize to [0]*n
+            exp.fill(0); // Initialize to [0]*n
             if (is_a<Mul>(*p.first)) {
                 const map_basic_basic &term = rcp_static_cast<const Mul>(p.first)->dict_;
                 for (auto &q: term) {
@@ -62,9 +62,9 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
 
 void poly_mul(const umap_vec_mpz &A, const umap_vec_mpz &B, umap_vec_mpz &C)
 {
-    vec_int exp;
+    vec_int4 exp;
     int n = (A.begin()->first).size();
-    exp.assign(n, 0); // Initialize to [0]*n
+    exp.fill(0); // Initialize to [0]*n
     /*
     std::cout << "A: " << A.load_factor() << " " << A.bucket_count() << " " << A.size() << " "
         << A.max_bucket_count() << std::endl;
