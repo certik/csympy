@@ -87,6 +87,17 @@ if (WITH_ARB)
     set(HAVE_CSYMPY_ARB yes)
 endif()
 
+# Piranha
+set(WITH_PIRANHA no
+    CACHE BOOL "Build with Piranha")
+
+if (WITH_PIRANHA)
+    find_package(Piranha REQUIRED)
+    include_directories(${PIRANHA_INCLUDE_DIRS})
+    set(LIBS ${LIBS} pthread)
+    set(HAVE_CSYMPY_PIRANHA yes)
+endif()
+
 # Python
 set(WITH_PYTHON no
     CACHE BOOL "Build with Python wrappers")
@@ -214,6 +225,11 @@ if (WITH_ARB)
     message("FLINT_LIBRARIES: ${FLINT_LIBRARIES}")
     message("MPFR_INCLUDE_DIRS: ${MPFR_INCLUDE_DIRS}")
     message("MPFR_LIBRARIES: ${MPFR_LIBRARIES}")
+endif()
+
+message("WITH_PIRANHA: ${WITH_PIRANHA}")
+if (WITH_PIRANHA)
+    message("PIRANHA_INCLUDE_DIRS: ${PIRANHA_INCLUDE_DIRS}")
 endif()
 
 message("Copying source of python wrappers into: ${CMAKE_CURRENT_BINARY_DIR}")
