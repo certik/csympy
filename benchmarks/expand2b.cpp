@@ -21,7 +21,6 @@ using CSymPy::umap_vec_mpz;
 using CSymPy::RCP;
 using CSymPy::rcp;
 using CSymPy::print_stack_on_segfault;
-using CSymPy::integer;
 
 int main(int argc, char* argv[])
 {
@@ -29,19 +28,20 @@ int main(int argc, char* argv[])
     RCP<const Basic> x = rcp(new Symbol("x"));
     RCP<const Basic> y = rcp(new Symbol("y"));
     RCP<const Basic> z = rcp(new Symbol("z"));
-    RCP<const Basic> t = rcp(new Symbol("t"));
+    RCP<const Basic> w = rcp(new Symbol("w"));
+    RCP<const Basic> i15 = rcp(new Integer(15));
 
     RCP<const Basic> e, f1, f2, r;
 
-    e = pow(add(add(add(add(x, y), z), t), integer(1)), integer(20));
+    e = pow(add(add(add(x, y), z), w), i15);
     f1 = expand(e);
-    f2 = expand(add(e, integer(1)));
+    f2 = expand(add(e, w));
 
     umap_basic_num syms;
     insert(syms, x, rcp(new Integer(0)));
     insert(syms, y, rcp(new Integer(1)));
     insert(syms, z, rcp(new Integer(2)));
-    insert(syms, t, rcp(new Integer(3)));
+    insert(syms, w, rcp(new Integer(3)));
 
     umap_vec_mpz P1, P2, C;
 
