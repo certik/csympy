@@ -13,8 +13,14 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
 {
     if (is_a<Add>(*p)) {
         int n = syms.size();
+        const RCP<const Number> add_coeff =
+            rcp_static_cast<const Add>(p)->coef_;
         const umap_basic_num &d = rcp_static_cast<const Add>(p)->dict_;
         vec_int4 exp;
+        exp.fill(0);
+        if (!is_a<Integer>(*add_coeff))
+                throw std::runtime_error("Not implemented.");
+        P[exp] = rcp_static_cast<const Integer>(add_coeff)->as_int();
         mpz_class coef;
         for (auto &p: d) {
             if (!is_a<Integer>(*p.second))
