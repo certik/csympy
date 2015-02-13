@@ -9,7 +9,7 @@
 #include "basic.h"
 #include "dict.h"
 
-#include <piranha/piranha.hpp>
+#include <flint/fmpzxx.h>
 
 namespace CSymPy {
 
@@ -35,7 +35,7 @@ typedef struct
     }
 } vec_int_eq;
 
-typedef std::unordered_map<vec_int4, piranha::integer,
+typedef std::unordered_map<vec_int4, flint::fmpzxx,
         vec_int_hash, vec_int_eq> umap_vec_mpz;
 
 

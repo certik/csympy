@@ -59,7 +59,8 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
                 throw std::runtime_error("Not implemented.");
             }
 
-            P[exp] = piranha::integer{coef.get_str()};
+            std::string tmp = coef.get_str();
+            P[exp] = flint::fmpzxx{tmp.c_str()};
         }
     } else {
         throw std::runtime_error("Not implemented.");
