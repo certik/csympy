@@ -74,11 +74,13 @@ std::ostream& operator<<(std::ostream& out, const CSymPy::map_vec_mpz& d)
     return CSymPy::print_map(out, d);
 }
 
+/*
 std::ostream& operator<<(std::ostream& out, const CSymPy::umap_vec_mpz& d)
 {
     return out;
 //    return print_map(out, d);
 }
+*/
 
 std::ostream& operator<<(std::ostream& out, const CSymPy::map_basic_num& d)
 {

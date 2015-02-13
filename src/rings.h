@@ -9,7 +9,35 @@
 #include "basic.h"
 #include "dict.h"
 
+#include <piranha/piranha.hpp>
+
 namespace CSymPy {
+
+typedef std::array<int, 4> vec_int4;
+
+//! Part of umap_vec_mpz:
+typedef struct
+{
+    inline std::size_t operator() (const vec_int4 &k) const {
+        std::size_t h = 0;
+        for (auto &p: k) {
+            h = (h << 4) + p;
+        }
+        return h;
+    }
+} vec_int_hash;
+
+typedef struct
+{
+    //! \return true if `x==y`
+    inline bool operator() (const vec_int4 &x, const vec_int4 &y) const {
+        return x == y;
+    }
+} vec_int_eq;
+
+typedef std::unordered_map<vec_int4, piranha::integer,
+        vec_int_hash, vec_int_eq> umap_vec_mpz;
+
 
 //! Converts expression `p` into a polynomial `P`, with symbols `sym`
 void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms,

@@ -8,6 +8,7 @@
 #define CSYMPY_MONOMIALS_H
 
 #include "basic.h"
+#include "rings.h"
 
 namespace CSymPy {
 //! Monomial multiplication

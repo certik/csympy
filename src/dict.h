@@ -26,7 +26,6 @@ typedef std::unordered_map<RCP<const Basic>, RCP<const Basic>,
         RCPBasicHash, RCPBasicKeyEq> umap_basic_basic;
 
 typedef std::vector<int> vec_int;
-typedef std::array<int, 4> vec_int4;
 typedef std::vector<RCP<const Basic>> vec_basic;
 typedef std::vector<RCP<const Integer>> vec_integer;
 typedef std::map<vec_int, long long int> map_vec_int;
@@ -68,29 +67,6 @@ int map_basic_num_compare(const map_basic_num &a, const map_basic_num &b);
 int vec_basic_compare(const vec_basic &a, const vec_basic &b);
 
 
-//! Part of umap_vec_mpz:
-typedef struct
-{
-    inline std::size_t operator() (const vec_int4 &k) const {
-        std::size_t h = 0;
-        for (auto &p: k) {
-            h = (h << 4) + p;
-        }
-        return h;
-    }
-} vec_int_hash;
-
-typedef struct
-{
-    //! \return true if `x==y`
-    inline bool operator() (const vec_int4 &x, const vec_int4 &y) const {
-        return x == y;
-    }
-} vec_int_eq;
-
-typedef std::unordered_map<vec_int4, mpz_class,
-        vec_int_hash, vec_int_eq> umap_vec_mpz;
-
 } // CSymPy
 
 
@@ -98,7 +74,7 @@ std::ostream& operator<<(std::ostream& out, const CSymPy::umap_basic_num& d);
 std::ostream& operator<<(std::ostream& out, const CSymPy::vec_int& d);
 std::ostream& operator<<(std::ostream& out, const CSymPy::map_vec_int& d);
 std::ostream& operator<<(std::ostream& out, const CSymPy::map_vec_mpz& d);
-std::ostream& operator<<(std::ostream& out, const CSymPy::umap_vec_mpz& d);
+//std::ostream& operator<<(std::ostream& out, const CSymPy::umap_vec_mpz& d);
 std::ostream& operator<<(std::ostream& out, const CSymPy::map_basic_num& d);
 std::ostream& operator<<(std::ostream& out, const CSymPy::map_basic_basic& d);
 std::ostream& operator<<(std::ostream& out, const CSymPy::umap_basic_basic& d);
