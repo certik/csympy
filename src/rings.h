@@ -9,8 +9,6 @@
 #include "basic.h"
 #include "dict.h"
 
-#include <flint/fmpzxx.h>
-
 namespace CSymPy {
 
 typedef std::array<int, 4> vec_int4;

@@ -7,8 +7,6 @@
 #include "rings.h"
 #include "monomials.h"
 
-#include <piranha/piranha.hpp>
-
 namespace CSymPy {
 
 void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
@@ -121,19 +119,6 @@ void poly_print_stats(const umap_vec_mpz &A)
     std::cout << "size mpz_t2:       " << sizeof(mpz_t2) << std::endl;
     std::cout << "size __mpz_struct: " << sizeof(__mpz_struct) << std::endl;
     std::cout << "size my_int:       " << sizeof(my_int) << std::endl;
-    std::cout << "size flint::fmpzxx: " << sizeof(flint::fmpzxx) << std::endl;
-    std::cout << "size piranha::integer:     " <<
-        sizeof(piranha::integer) << std::endl;
-    std::cout << "size piranha::integer<>:   " <<
-        sizeof(piranha::mp_integer<>) << std::endl;
-    std::cout << "size piranha::integer<8>:  " <<
-        sizeof(piranha::mp_integer<8>) << std::endl;
-    std::cout << "size piranha::integer<16>: " <<
-        sizeof(piranha::mp_integer<16>) << std::endl;
-    std::cout << "size piranha::integer<32>: " <<
-        sizeof(piranha::mp_integer<32>) << std::endl;
-    std::cout << "size piranha::integer<64>: " <<
-        sizeof(piranha::mp_integer<64>) << std::endl;
 }
 
 } // CSymPy
