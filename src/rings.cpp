@@ -12,7 +12,7 @@ namespace CSymPy {
 void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
 {
     if (is_a<Add>(*p)) {
-        int n = syms.size();
+        //int n = syms.size();
         const RCP<const Number> add_coeff =
             rcp_static_cast<const Add>(p)->coef_;
         const umap_basic_num &d = rcp_static_cast<const Add>(p)->dict_;
@@ -59,8 +59,12 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
                 throw std::runtime_error("Not implemented.");
             }
 
-            std::string tmp = coef.get_str();
-            P[exp] = flint::fmpzxx{tmp.c_str()};
+            //std::string tmp = coef.get_str();
+            //P[exp] = flint::fmpzxx{tmp.c_str()};
+            if (!(coef.fits_sint_p())) {
+                throw std::runtime_error("as_int: Integer larger than int");
+            }
+            P[exp] = coef.get_si();
         }
     } else {
         throw std::runtime_error("Not implemented.");
@@ -70,7 +74,7 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
 void poly_mul(const umap_vec_mpz &A, const umap_vec_mpz &B, umap_vec_mpz &C)
 {
     vec_int4 exp;
-    int n = (A.begin()->first).size();
+//    int n = (A.begin()->first).size();
     exp.fill(0); // Initialize to [0]*n
     /*
     std::cout << "A: " << A.load_factor() << " " << A.bucket_count() << " " << A.size() << " "
@@ -96,6 +100,18 @@ void poly_mul(const umap_vec_mpz &A, const umap_vec_mpz &B, umap_vec_mpz &C)
         std::cout << std::endl;
     }
     */
+}
+
+void poly_print_stats(const umap_vec_mpz &A)
+{
+    my_int min=std::numeric_limits<my_int>::max();
+    my_int max=std::numeric_limits<my_int>::min();
+    for (auto &a: A) {
+        if (a.second < min) min = a.second;
+        if (a.second > max) max = a.second;
+    }
+    std::cout << "min: " << min << std::endl;
+    std::cout << "max: " << max << std::endl;
 }
 
 } // CSymPy

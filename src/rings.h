@@ -35,7 +35,9 @@ typedef struct
     }
 } vec_int_eq;
 
-typedef std::unordered_map<vec_int4, flint::fmpzxx,
+using my_int = std::int64_t;
+
+typedef std::unordered_map<vec_int4, my_int,
         vec_int_hash, vec_int_eq> umap_vec_mpz;
 
 
@@ -45,6 +47,7 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms,
 
 //! Multiply two polynomials: `C = A*B`
 void poly_mul(const umap_vec_mpz &A, const umap_vec_mpz &B, umap_vec_mpz &C);
+void poly_print_stats(const umap_vec_mpz &A);
 
 } // CSymPy
 

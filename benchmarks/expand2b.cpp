@@ -68,6 +68,7 @@ int main(int argc, char* argv[])
         << "ms" << std::endl;
     std::cout << "number of terms: "
         << C.size() << std::endl;
+    poly_print_stats(C);
 
 
 
