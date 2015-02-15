@@ -9,6 +9,20 @@
 
 namespace CSymPy {
 
+using bint = std::int64_t;
+using ubint = std::uint64_t;
+
+#define CSYMPY_INT_BITS 64
+static_assert(CSYMPY_INT_BITS == sizeof(bint)*8,
+        "INT_BITS value is inconsistent");
+#define CSYMPY_PTR2INT(x) (((ubint) (x) >> 2) | (1LL << (CSYMPY_INT_BITS - 2)))
+#define CSYMPY_INT2PTR(x) ((__mpz_struct *) ((x) << 2))
+#define CSYMPY_INT_IS_MPZ(x) (((x) >> (CSYMPY_INT_BITS - 2)) == 1)
+#define CSYMPY_INT_MAX ((1LL << (CSYMPY_INT_BITS - 2)) - 1)
+#define CSYMPY_INT_MIN (-(1LL << (CSYMPY_INT_BITS - 2)))
+
+
+
 void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
 {
     if (is_a<Add>(*p)) {
@@ -104,6 +118,13 @@ void poly_mul(const umap_vec_mpz &A, const umap_vec_mpz &B, umap_vec_mpz &C)
 
 typedef __mpz_struct mpz_t2[3];
 
+bint mpzxx_mul(const bint a, const bint b)
+{
+    bint c;
+    c = a*b;
+    return c;
+}
+
 void poly_print_stats(const umap_vec_mpz &A)
 {
     my_int min=std::numeric_limits<my_int>::max();
@@ -119,6 +140,16 @@ void poly_print_stats(const umap_vec_mpz &A)
     std::cout << "size mpz_t2:       " << sizeof(mpz_t2) << std::endl;
     std::cout << "size __mpz_struct: " << sizeof(__mpz_struct) << std::endl;
     std::cout << "size my_int:       " << sizeof(my_int) << std::endl;
+    std::cout << "int min: " << CSYMPY_INT_MIN << std::endl;
+    std::cout << "int max: " << CSYMPY_INT_MAX << std::endl;
+
+    bint a, b, c;
+    a = 5;
+    b = 7;
+    std::cout << "a: " << CSYMPY_INT_IS_MPZ(a) << std::endl;
+    std::cout << "b: " << CSYMPY_INT_IS_MPZ(b) << std::endl;
+    c = mpzxx_mul(a, b);
+    std::cout << "c: " << CSYMPY_INT_IS_MPZ(c) << std::endl;
 }
 
 } // CSymPy
