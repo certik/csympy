@@ -1,27 +1,22 @@
-#include <cassert>
-
 #include "csympy_rcp.h"
 
 using CSymPy::RCP;
-using CSymPy::rcp;
 using CSymPy::Ptr;
-using CSymPy::null;
-
-class Mesh {
-public:
-    mutable unsigned int refcount_;
-    Mesh() : refcount_(0) {}
-
-    int x, y;
-};
+using CSymPy::rcp;
 
 int main(int argc, char* argv[])
 {
 
-    RCP<Mesh> m = rcp(new Mesh());
-    Ptr<Mesh> p = m.ptr();
-    if (m == null) return 1;
-    if (p->refcount_ != 1) return 1;
+    Ptr<int> a;
+    {
+        RCP<int> b = rcp(new int(1));
+        *b = 5;
+        a = b.ptr();
+        std::cout << *a << std::endl;
+        std::cout << *b << std::endl;
+    }
+    std::cout << *a << std::endl;
+    *a = 5;
 
     return 0;
 }
