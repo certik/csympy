@@ -43,7 +43,8 @@ int main(int argc, char* argv[])
 
     Ptr<int> a;
     {
-        RCP<int> b = rcp(new int(1));
+        //RCP<int> b = rcp(new int(1));
+        UniquePtr<int> b(new int(1));
         *b = 5;
         a = b.ptr();
         std::cout << *a << std::endl;
