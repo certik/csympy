@@ -1,4 +1,5 @@
 #include <chrono>
+#include <memory>
 
 #include "basic.h"
 #include "symbol.h"
@@ -59,12 +60,67 @@ RCP<const Basic> Basic::diff(const RCP<const Symbol> &x) const
     return rcp(new Derivative(rcp(this), {x}));
 }
 
+//#define UNIQUE_PTR_DEBUG
+
+template<class T>
+class UniquePtr {
+public:
+    inline explicit UniquePtr( T *ptr ) : ptr_(ptr) {
+        CSYMPY_ASSERT(ptr != nullptr)
+    }
+#ifndef UNIQUE_PTR_DEBUG
+    ~UniquePtr() { delete ptr_; }
+#endif
+    // Copy constructor and assignment are disabled
+    inline UniquePtr(const UniquePtr<T>& ptr) = delete;
+    UniquePtr<T>& operator=(const UniquePtr<T>& ptr) = delete;
+    // Move constructor and assignment
+    inline UniquePtr(UniquePtr&&) = default;
+    UniquePtr<T>& operator=(UniquePtr&&) = default;
+    inline T* operator->() const { return ptr_; }
+    inline T& operator*() const { return *ptr_; }
+    inline const Ptr<T> ptr() const {
+#ifdef UNIQUE_PTR_DEBUG
+        return ptr_.ptr();
+#else
+        return Ptr<T>(ptr_);
+#endif
+    }
+private:
+#ifdef UNIQUE_PTR_DEBUG
+    RCP<T> ptr_;
+#else
+    T *ptr_;
+#endif
+};
+
+template<class T>
+inline UniquePtr<T> uniqueptr(T* p)
+{
+    return UniquePtr<T>(p);
+}
+
+//! Our less operator `(<)`:
+struct UniquePtrBasicKeyLess {
+    //! true if `x < y`, false otherwise
+    bool operator() (const std::unique_ptr<const Basic> &x, const std::unique_ptr<const Basic> &y) const {
+        std::size_t xh=x->hash(), yh=y->hash();
+        if (xh != yh) return xh < yh;
+        if (x->__eq__(*y)) return false;
+        return x->__cmp__(*y) == -1;
+    }
+};
+
+typedef std::map<std::unique_ptr<const Basic>, std::unique_ptr<const Basic>, UniquePtrBasicKeyLess> map_basic_basic_unique_ptr;
+
+
 struct Object {
     TypeID type_id;
     // Put the largest object here. The assert statements below check this at
     // compile time, if they fail, then 'largest_object' was not the largest
     // and one has to fix this:
-    using largest_object = Add;
+    //using largest_object = Add;
+    using largest_object = Integer;
     alignas(Basic) char data[sizeof(largest_object)];
 };
 #define check_size_alignment(TYPE) \
@@ -72,12 +128,12 @@ struct Object {
     static_assert(std::alignment_of<TYPE>::value == std::alignment_of<Object>::value, "Alignment of 'Object' is not correct");
 
 check_size_alignment(Basic)
-check_size_alignment(Add)
-check_size_alignment(Mul)
+//check_size_alignment(Add)
+//check_size_alignment(Mul)
 check_size_alignment(Pow)
 check_size_alignment(Integer)
-check_size_alignment(Rational)
-check_size_alignment(Complex)
+//check_size_alignment(Rational)
+//check_size_alignment(Complex)
 check_size_alignment(Symbol)
 check_size_alignment(RCP<const Basic>)
 
@@ -179,8 +235,8 @@ void test1()
 
     std::cout << sizeof(Object::type_id) << std::endl;;
 
-    int max_n = 10000000;
-    //int max_n = 10;
+    //int max_n = 10000000;
+    int max_n = 10;
 
     map_basic_basic d;
     std::cout << "start RCP" << std::endl;
@@ -208,14 +264,28 @@ void test1()
     }
     t2 = std::chrono::high_resolution_clock::now();
     std::cout << "stop value" << std::endl;
-    /*
     for (auto &p: d2) {
         const Integer *i = reinterpret_cast<const Integer *>(p.first.data);
         const Integer *j = reinterpret_cast<const Integer *>(p.second.data);
         std::cout << *i << ":" << *j << std::endl;
     }
-    */
-    //std::cout << d2 << std::endl;
+    std::cout << "Time: "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
+        << "ms" << std::endl;
+
+    map_basic_basic_unique_ptr d3;
+    std::cout << "start value" << std::endl;
+    t1 = std::chrono::high_resolution_clock::now();
+    for (int i=0; i < max_n; i++) {
+        std::unique_ptr<const Basic> i1(new Integer(i));
+        std::unique_ptr<const Basic> i2(new Integer(i+1));
+        d3.insert(std::pair<std::unique_ptr<const Basic>, std::unique_ptr<const Basic>>(std::move(i1), std::move(i2)));
+    }
+    t2 = std::chrono::high_resolution_clock::now();
+    std::cout << "stop value" << std::endl;
+    for (auto &p: d3) {
+        std::cout << *(p.first) << ":" << *(p.second) << std::endl;
+    }
     std::cout << "Time: "
         << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
         << "ms" << std::endl;
