@@ -114,6 +114,8 @@ struct UniquePtrBasicKeyLess {
 typedef std::map<std::unique_ptr<const Basic>, std::unique_ptr<const Basic>, UniquePtrBasicKeyLess> map_basic_basic_unique_ptr;
 
 
+// In general, a struct instance will have the alignment of its widest scalar
+// member. We check this using compile time assert statements.
 struct Object {
     TypeID type_id;
     // Put the largest object here. The assert statements below check this at
