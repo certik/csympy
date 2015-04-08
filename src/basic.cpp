@@ -57,6 +57,24 @@ RCP<const Basic> Basic::diff(const RCP<const Symbol> &x) const
     return rcp(new Derivative(rcp(this), {x}));
 }
 
+struct alignas(Basic) Object {
+    TypeID type_id;
+    char data[88];
+};
+#define check_size_alignment(TYPE) \
+    static_assert(sizeof(TYPE) <= sizeof(Object), "Size of 'Object' is not correct"); \
+    static_assert(std::alignment_of<TYPE>::value == std::alignment_of<Object>::value, "Alignment of 'Object' is not correct");
+
+check_size_alignment(Basic)
+check_size_alignment(Add)
+check_size_alignment(Mul)
+check_size_alignment(Pow)
+check_size_alignment(Integer)
+check_size_alignment(Rational)
+check_size_alignment(Complex)
+check_size_alignment(Symbol)
+check_size_alignment(RCP<const Basic>)
+
 struct Object2;
 struct ObjectKeyLess;
 
