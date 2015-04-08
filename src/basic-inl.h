@@ -38,6 +38,8 @@ inline bool is_a_sub(const Basic &b)
     return dynamic_cast<const T *>(&b) != nullptr;
 }
 
+void test1();
+
 } // CSymPy
 
 // global namespace functions

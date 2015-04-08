@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "basic.h"
 #include "symbol.h"
 #include "add.h"
@@ -59,7 +61,14 @@ RCP<const Basic> Basic::diff(const RCP<const Symbol> &x) const
 
 struct alignas(Basic) Object {
     TypeID type_id;
-    char data[88];
+    // Put the largest object here. The assert statements below check this at
+    // compile time, if they fail, then 'largest_object' was not the largest
+    // and/or the PADDING below was incorrect.
+    using largest_object = Add;
+    // The PADDING is platform dependent (use as large value as possible,
+    // without triggering any compile time assert error below):
+#define PADDING 7
+    char data[sizeof(largest_object)-sizeof(type_id)-PADDING];
 };
 #define check_size_alignment(TYPE) \
     static_assert(sizeof(TYPE) <= sizeof(Object), "Size of 'Object' is not correct"); \
@@ -75,10 +84,25 @@ check_size_alignment(Complex)
 check_size_alignment(Symbol)
 check_size_alignment(RCP<const Basic>)
 
-struct Object2;
-struct ObjectKeyLess;
+//! Our less operator `(<)`:
+struct ObjectKeyLess {
+    //! true if `x < y`, false otherwise
+    bool operator() (const Object &x, const Object &y) const {
+        /*
+        std::size_t xh=x->hash(), yh=y->hash();
+        if (xh != yh) return xh < yh;
+        if (x->__eq__(*y)) return false;
+        return x->__cmp__(*y) == -1;
+        */
+        return x.type_id < y.type_id;
+    }
+};
+typedef std::map<Object, Object, ObjectKeyLess> map_object_object;
 
-typedef std::map<Object2, Object2, ObjectKeyLess> map_object_object;
+struct Object2;
+struct ObjectKeyLess2;
+
+typedef std::map<Object2, Object2, ObjectKeyLess2> map_object_object2;
 
 struct AddS {
     RCP<const Number> coef_;
@@ -88,7 +112,7 @@ struct AddS {
 struct MulS {
     RCP<const Number> coef_;
     map_basic_basic dict_;
-    // map_object_object dict2_; // error: invalid use of incomplete type ‘struct CSymPy::ObjectKeyLess’
+    // map_object_object2 dict2_; // error: invalid use of incomplete type ‘struct CSymPy::ObjectKeyLess2’
 };
 struct PowS {
     RCP<const Basic> base_, exp_;
@@ -133,7 +157,7 @@ struct Object2 {
 };
 
 //! Our less operator `(<)`:
-struct ObjectKeyLess {
+struct ObjectKeyLess2 {
     //! true if `x < y`, false otherwise
     bool operator() (const Object2 &x, const Object2 &y) const {
         /*
@@ -154,6 +178,23 @@ void test1()
     o.s.name_ = "test";
     std::cout << o.s.name_ << std::endl;
     o.s.~SymbolS();
+
+
+    std::cout << sizeof(Object::type_id) << std::endl;;
+
+    int max_n = 100;
+    map_basic_basic d;
+    std::cout << "start RCP" << std::endl;
+    auto t1 = std::chrono::high_resolution_clock::now();
+    for (int i=0; i < max_n; i++) {
+        insert(d, integer(i), integer(i+1));
+    }
+    auto t2 = std::chrono::high_resolution_clock::now();
+    std::cout << "stop RCP" << std::endl;
+//    std::cout << d << std::endl;
+    std::cout << "Time: "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
+        << "ms" << std::endl;
 }
 
 } // CSymPy
