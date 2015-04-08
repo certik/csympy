@@ -187,7 +187,7 @@ void test1()
     std::cout << "start RCP" << std::endl;
     auto t1 = std::chrono::high_resolution_clock::now();
     for (int i=0; i < max_n; i++) {
-        insert(d, integer(i), integer(i+1));
+        insert(d, rcp(new Integer(i)), rcp(new Integer(i+1)));
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     std::cout << "stop RCP" << std::endl;
