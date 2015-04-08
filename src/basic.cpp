@@ -59,19 +59,16 @@ RCP<const Basic> Basic::diff(const RCP<const Symbol> &x) const
     return rcp(new Derivative(rcp(this), {x}));
 }
 
-struct alignas(Basic) Object {
+struct Object {
     TypeID type_id;
     // Put the largest object here. The assert statements below check this at
     // compile time, if they fail, then 'largest_object' was not the largest
-    // and/or the PADDING below was incorrect.
+    // and one has to fix this:
     using largest_object = Add;
-    // The PADDING is platform dependent (use as large value as possible,
-    // without triggering any compile time assert error below):
-#define PADDING 7
-    char data[sizeof(largest_object)-sizeof(type_id)-PADDING];
+    alignas(Basic) char data[sizeof(largest_object)];
 };
 #define check_size_alignment(TYPE) \
-    static_assert(sizeof(TYPE) <= sizeof(Object), "Size of 'Object' is not correct"); \
+    static_assert(sizeof(TYPE) <= sizeof(Object::data), "Size of 'Object' is not correct"); \
     static_assert(std::alignment_of<TYPE>::value == std::alignment_of<Object>::value, "Alignment of 'Object' is not correct");
 
 check_size_alignment(Basic)
@@ -182,7 +179,8 @@ void test1()
 
     std::cout << sizeof(Object::type_id) << std::endl;;
 
-    int max_n = 100;
+    int max_n = 10;
+
     map_basic_basic d;
     std::cout << "start RCP" << std::endl;
     auto t1 = std::chrono::high_resolution_clock::now();
@@ -191,7 +189,28 @@ void test1()
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     std::cout << "stop RCP" << std::endl;
-//    std::cout << d << std::endl;
+    std::cout << d << std::endl;
+    std::cout << "Time: "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
+        << "ms" << std::endl;
+
+    map_object_object d2;
+    std::cout << "start value" << std::endl;
+    t1 = std::chrono::high_resolution_clock::now();
+    for (int i=0; i < max_n; i++) {
+        Object i1, i2;
+        i1.type_id = INTEGER;
+        i2.type_id = INTEGER;
+        new (&i1.data) Integer(i);
+        new (&i2.data) Integer(i+1);
+        insert(d2, i1, i2);
+    }
+    t2 = std::chrono::high_resolution_clock::now();
+    std::cout << "stop RCP" << std::endl;
+    for (auto &p: d2) {
+        Object i1=p.first, i2=p.second;
+    }
+    //std::cout << d2 << std::endl;
     std::cout << "Time: "
         << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
         << "ms" << std::endl;
