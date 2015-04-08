@@ -235,8 +235,8 @@ void test1()
 
     std::cout << sizeof(Object::type_id) << std::endl;;
 
-    //int max_n = 10000000;
-    int max_n = 10;
+    int max_n = 10000000;
+    //int max_n = 10;
 
     map_basic_basic d;
     std::cout << "start RCP" << std::endl;
@@ -264,11 +264,13 @@ void test1()
     }
     t2 = std::chrono::high_resolution_clock::now();
     std::cout << "stop value" << std::endl;
+    /*
     for (auto &p: d2) {
         const Integer *i = reinterpret_cast<const Integer *>(p.first.data);
         const Integer *j = reinterpret_cast<const Integer *>(p.second.data);
         std::cout << *i << ":" << *j << std::endl;
     }
+    */
     std::cout << "Time: "
         << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
         << "ms" << std::endl;
@@ -283,9 +285,11 @@ void test1()
     }
     t2 = std::chrono::high_resolution_clock::now();
     std::cout << "stop value" << std::endl;
+    /*
     for (auto &p: d3) {
         std::cout << *(p.first) << ":" << *(p.second) << std::endl;
     }
+    */
     std::cout << "Time: "
         << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
         << "ms" << std::endl;
