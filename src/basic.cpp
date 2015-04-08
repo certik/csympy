@@ -57,13 +57,20 @@ RCP<const Basic> Basic::diff(const RCP<const Symbol> &x) const
     return rcp(new Derivative(rcp(this), {x}));
 }
 
+struct Object;
+struct ObjectKeyLess;
+
+typedef std::map<Object, Object, ObjectKeyLess> map_object_object;
+
 struct AddS {
     RCP<const Number> coef_;
     umap_basic_num dict_;
+    std::vector<Object> v; // This works
 };
 struct MulS {
     RCP<const Number> coef_;
     map_basic_basic dict_;
+    // map_object_object dict2_; // error: invalid use of incomplete type ‘struct CSymPy::ObjectKeyLess’
 };
 struct PowS {
     RCP<const Basic> base_, exp_;
@@ -105,6 +112,20 @@ struct Object {
         SymbolS s;
         RCP<const Basic> b;
     };
+};
+
+//! Our less operator `(<)`:
+struct ObjectKeyLess {
+    //! true if `x < y`, false otherwise
+    bool operator() (const Object &x, const Object &y) const {
+        /*
+        std::size_t xh=x->hash(), yh=y->hash();
+        if (xh != yh) return xh < yh;
+        if (x->__eq__(*y)) return false;
+        return x->__cmp__(*y) == -1;
+        */
+        return x.type_id < y.type_id;
+    }
 };
 
 void test1()
