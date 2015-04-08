@@ -57,5 +57,65 @@ RCP<const Basic> Basic::diff(const RCP<const Symbol> &x) const
     return rcp(new Derivative(rcp(this), {x}));
 }
 
+struct AddS {
+    RCP<const Number> coef_;
+    umap_basic_num dict_;
+};
+struct MulS {
+    RCP<const Number> coef_;
+    map_basic_basic dict_;
+};
+struct PowS {
+    RCP<const Basic> base_, exp_;
+};
+struct IntegerS {
+    mpz_class i;
+};
+struct RationalS {
+    mpq_class i;
+};
+struct ComplexS {
+    mpq_class real_;
+    mpq_class imaginary_;
+};
+struct SymbolS {
+    std::string name_;
+};
+
+
+struct Object {
+    Object() {}
+
+    Object(Object const&) = delete;
+    Object& operator=(Object const&) = delete;
+
+    Object(Object&&) = delete;
+    Object& operator=(Object&&) = delete;
+
+    ~Object() {}
+
+    TypeID type_id;
+    union {
+        AddS a;
+        MulS m;
+        PowS p;
+        IntegerS i;
+        RationalS r;
+        ComplexS c;
+        SymbolS s;
+        RCP<const Basic> b;
+    };
+};
+
+void test1()
+{
+    Object o;
+    o.type_id = SYMBOL;
+    new (&o.s) SymbolS();
+    o.s.name_ = "test";
+    std::cout << o.s.name_ << std::endl;
+    o.s.~SymbolS();
+}
+
 } // CSymPy
 
