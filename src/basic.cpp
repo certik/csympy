@@ -84,14 +84,13 @@ check_size_alignment(RCP<const Basic>)
 //! Our less operator `(<)`:
 struct ObjectKeyLess {
     //! true if `x < y`, false otherwise
-    bool operator() (const Object &x, const Object &y) const {
-        /*
+    bool operator() (const Object &x_, const Object &y_) const {
+        const Basic *x = reinterpret_cast<const Basic *>(x_.data);
+        const Basic *y = reinterpret_cast<const Basic *>(y_.data);
         std::size_t xh=x->hash(), yh=y->hash();
         if (xh != yh) return xh < yh;
         if (x->__eq__(*y)) return false;
         return x->__cmp__(*y) == -1;
-        */
-        return x.type_id < y.type_id;
     }
 };
 typedef std::map<Object, Object, ObjectKeyLess> map_object_object;
@@ -167,6 +166,7 @@ struct ObjectKeyLess2 {
     }
 };
 
+
 void test1()
 {
     Object2 o;
@@ -179,7 +179,8 @@ void test1()
 
     std::cout << sizeof(Object::type_id) << std::endl;;
 
-    int max_n = 10;
+    int max_n = 10000000;
+    //int max_n = 10;
 
     map_basic_basic d;
     std::cout << "start RCP" << std::endl;
@@ -189,7 +190,7 @@ void test1()
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     std::cout << "stop RCP" << std::endl;
-    std::cout << d << std::endl;
+//    std::cout << d << std::endl;
     std::cout << "Time: "
         << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
         << "ms" << std::endl;
@@ -201,15 +202,19 @@ void test1()
         Object i1, i2;
         i1.type_id = INTEGER;
         i2.type_id = INTEGER;
-        new (&i1.data) Integer(i);
-        new (&i2.data) Integer(i+1);
+        new (i1.data) Integer(i);
+        new (i2.data) Integer(i+1);
         insert(d2, i1, i2);
     }
     t2 = std::chrono::high_resolution_clock::now();
-    std::cout << "stop RCP" << std::endl;
+    std::cout << "stop value" << std::endl;
+    /*
     for (auto &p: d2) {
-        Object i1=p.first, i2=p.second;
+        const Integer *i = reinterpret_cast<const Integer *>(p.first.data);
+        const Integer *j = reinterpret_cast<const Integer *>(p.second.data);
+        std::cout << *i << ":" << *j << std::endl;
     }
+    */
     //std::cout << d2 << std::endl;
     std::cout << "Time: "
         << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()
