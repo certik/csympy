@@ -57,15 +57,15 @@ RCP<const Basic> Basic::diff(const RCP<const Symbol> &x) const
     return rcp(new Derivative(rcp(this), {x}));
 }
 
-struct Object;
+struct Object2;
 struct ObjectKeyLess;
 
-typedef std::map<Object, Object, ObjectKeyLess> map_object_object;
+typedef std::map<Object2, Object2, ObjectKeyLess> map_object_object;
 
 struct AddS {
     RCP<const Number> coef_;
     umap_basic_num dict_;
-    std::vector<Object> v; // This works
+    std::vector<Object2> v; // This works
 };
 struct MulS {
     RCP<const Number> coef_;
@@ -90,16 +90,16 @@ struct SymbolS {
 };
 
 
-struct Object {
-    Object() {}
+struct Object2 {
+    Object2() {}
 
-    Object(Object const&) = delete;
-    Object& operator=(Object const&) = delete;
+    Object2(Object2 const&) = delete;
+    Object2& operator=(Object2 const&) = delete;
 
-    Object(Object&&) = delete;
-    Object& operator=(Object&&) = delete;
+    Object2(Object2&&) = delete;
+    Object2& operator=(Object2&&) = delete;
 
-    ~Object() {}
+    ~Object2() {}
 
     TypeID type_id;
     union {
@@ -117,7 +117,7 @@ struct Object {
 //! Our less operator `(<)`:
 struct ObjectKeyLess {
     //! true if `x < y`, false otherwise
-    bool operator() (const Object &x, const Object &y) const {
+    bool operator() (const Object2 &x, const Object2 &y) const {
         /*
         std::size_t xh=x->hash(), yh=y->hash();
         if (xh != yh) return xh < yh;
@@ -130,7 +130,7 @@ struct ObjectKeyLess {
 
 void test1()
 {
-    Object o;
+    Object2 o;
     o.type_id = SYMBOL;
     new (&o.s) SymbolS();
     o.s.name_ = "test";
