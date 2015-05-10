@@ -2,6 +2,6 @@ Rakefile
 Gemfile
 LICENSE
 Manifest.txt
-csympy.gemspec
-lib/csympy.rb
+symengine.gemspec
+lib/symengine.rb
 spec/spec_helper.rb
