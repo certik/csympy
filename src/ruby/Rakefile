@@ -5,7 +5,7 @@ require 'bundler'
 Bundler::GemHelper.install_tasks
 
 require 'rake'
-require "rake/extensiontask"
+require 'rake/extensiontask'
 
 Rake::ExtensionTask.new do |ext|
     ext.name = 'symengine'
