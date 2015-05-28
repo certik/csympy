@@ -1,4 +1,3 @@
-#include <ruby.h>
 #include "extconf.h"
 #include "ruby_basic.h"
 ///////////////////
@@ -23,8 +22,5 @@ void Init_symengine() {
     rb_define_method(c_basic, "*", cbasic_mul, 1);
     rb_define_method(c_basic, "/", cbasic_div, 1);
     rb_define_method(c_basic, "**", cbasic_pow, 1);
-    rb_define_method(c_basic, "diff", cbasic_diff, 2);
     rb_define_method(c_basic, "-@", cbasic_neg, 0);
-    rb_define_method(c_basic, "to_str", cbasic_to_str, 0);
-    rb_define_method()
 }

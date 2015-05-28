@@ -1,4 +1,4 @@
-#include <ruby.h>
+#include "ruby.h"
 #include "cwrapper.h"
 
 static void cbasic_free(void *ptr);
@@ -6,8 +6,6 @@ static void cbasic_free(void *ptr);
 static VALUE cbasic_alloc(VALUE self);
 
 static VALUE cbasic_init(VALUE self);
-
-static VALUE cbasic_release(VALUE self);
 
 static VALUE cbasic_add(VALUE self, VALUE operand2);
 

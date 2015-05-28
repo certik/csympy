@@ -8,9 +8,9 @@ extension_name = 'symengine/symengine'
 #Check to see if the csympy library required to build this extension exists.
 #Typically, we would want to use libcsympy installed, including the header
 #files
-#unless have_library("libcsympy")
-#    raise "libcsympy not found"
-#end
+unless have_library("symengine")
+    raise "libsymengine not found"
+end
 #How is libcsympy installed? Not able to find libcsympy
 
 #creates the header file extconf.h, based on the results from all of the
