@@ -91,6 +91,10 @@ endif()
 set(WITH_PYTHON no
     CACHE BOOL "Build with Python wrappers")
 
+#Ruby
+set(WITH_RUBY no
+    CACHE BOOL "Build with Ruby bindings")
+
 # BFD
 set(WITH_BFD no
     CACHE BOOL "Build with BFD (binutils-dev) support")
@@ -189,6 +193,10 @@ if (WITH_PYTHON)
     add_subdirectory(csympy)
 endif ()
 
+if (WITH_RUBY)
+    find_package(RUBY REQUIRED)
+endif ()
+
 
 message("\n")
 message("Configuration results")
@@ -224,6 +232,10 @@ if (WITH_PYTHON)
     message("Python install path: ${PYTHON_INSTALL_PATH}")
 
     message("Cython path: ${CYTHON_BIN}")
+endif ()
+
+message("WITH_RUBY: ${WITH_RUBY}")
+if (WITH_RUBY)
 endif ()
 
 message("WITH_ECM: ${WITH_ECM}")
