@@ -1,5 +1,8 @@
 require 'mkmf'
 
+#To avoid the error "can not be used when making a shared object; recompile with -fPIC"
+$CFLAGS = ["-Wall -Werror=return-type -fPIC",$CFLAGS].join(" ")
+
 #Gives the ability to easily use alternate compilers to build the extension
 RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
 
