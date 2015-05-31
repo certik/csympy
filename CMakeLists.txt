@@ -194,7 +194,7 @@ if (WITH_PYTHON)
 endif ()
 
 if (WITH_RUBY)
-    find_package(RUBY REQUIRED)
+    find_package(Ruby REQUIRED)
 endif ()
 
 

@@ -7,11 +7,8 @@ Bundler::GemHelper.install_tasks
 require 'rake'
 require 'rake/extensiontask'
 
-Rake::ExtensionTask.new do |ext|
-    ext.name = 'symengine'
-    ext.ext_dir = 'ext/symengine'
-    ext.lib_dir = 'lib/'
-    ext.source_pattern = "**/*.{c,cpp, h}"
+Rake::ExtensionTask.new "symengine" do |ext|
+    ext.lib_dir = 'lib/symengine'
 end
 
 gemspec = eval(IO.read("symengine.gemspec"))
