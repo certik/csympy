@@ -1,11 +1,11 @@
 #include "ruby_basic.h"
 
-static void cbasic_free(void *ptr){
+void cbasic_free(void *ptr){
     basic_struct *basic_ptr = ptr;
     basic_free(basic_ptr);
 }
 
-static VALUE cbasic_alloc(VALUE klass){
+VALUE cbasic_alloc(VALUE klass){
     VALUE obj;
     basic_struct *struct_ptr;
 
@@ -16,7 +16,7 @@ static VALUE cbasic_alloc(VALUE klass){
     return obj;
 }
 
-static VALUE cbasic_init(VALUE self){
+VALUE cbasic_init(VALUE self){
     basic_struct *this;
 
     Data_Get_Struct(self, basic_struct, this);
@@ -25,7 +25,7 @@ static VALUE cbasic_init(VALUE self){
     return self;
 }
 
-static VALUE cbasic_add(VALUE self, VALUE operand2){
+VALUE cbasic_add(VALUE self, VALUE operand2){
     basic_struct *this, *cbasic_operand2, *cresult;
     VALUE result;
 
@@ -39,7 +39,7 @@ static VALUE cbasic_add(VALUE self, VALUE operand2){
     return result;
 }
 
-static VALUE cbasic_sub(VALUE self, VALUE operand2){
+VALUE cbasic_sub(VALUE self, VALUE operand2){
     basic_struct *this, *cbasic_operand2, *cresult;
     VALUE result;
 
@@ -53,7 +53,7 @@ static VALUE cbasic_sub(VALUE self, VALUE operand2){
     return result;
 }
 
-static VALUE cbasic_mul(VALUE self, VALUE operand2){
+VALUE cbasic_mul(VALUE self, VALUE operand2){
     basic_struct *this, *cbasic_operand2, *cresult;
     VALUE result;
 
@@ -67,7 +67,7 @@ static VALUE cbasic_mul(VALUE self, VALUE operand2){
     return result;
 }
 
-static VALUE cbasic_div(VALUE self, VALUE operand2){
+VALUE cbasic_div(VALUE self, VALUE operand2){
     basic_struct *this, *cbasic_operand2, *cresult;
     VALUE result;
 
@@ -81,7 +81,7 @@ static VALUE cbasic_div(VALUE self, VALUE operand2){
     return result;
 }
 
-static VALUE cbasic_pow(VALUE self, VALUE operand2){
+VALUE cbasic_pow(VALUE self, VALUE operand2){
     basic_struct *this, *cbasic_operand2, *cresult;
     VALUE result;
 
@@ -95,7 +95,7 @@ static VALUE cbasic_pow(VALUE self, VALUE operand2){
     return result;
 }
 
-static VALUE cbasic_neg(VALUE self){
+VALUE cbasic_neg(VALUE self){
     basic_struct *this, *cresult;
     VALUE result;
 
