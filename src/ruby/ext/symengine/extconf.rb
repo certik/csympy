@@ -27,6 +27,7 @@ LIB_DIRS = [
 
     # Check the ruby install locations
     LIBDIR,
+    '/home/certik/repos/symengine/src',
 
     # Finally fall back to /usr
     '/usr/lib'
@@ -58,14 +59,14 @@ dir_config(extension_name)
 # unless pkg_config('symengine')
 #    raise "libsymengine not found"
 # end
-unless have_header('cwrapper.h')
-    raise 'cwrapper.h not found'
-end
-unless have_library('symengine',
-                    'basic p; basic_init(p); basic_free(p)',
-                    'cwrapper.h')
-    abort 'Unable to find basic_init in library symengine!'
-end
+#unless have_header('cwrapper.h')
+#    raise 'cwrapper.h not found'
+#end
+#unless have_library('symengine',
+#                    'basic p; basic_init(p); basic_free(p)',
+#                    'cwrapper.h')
+#    abort 'Unable to find basic_init in library symengine!'
+#end
 $libs = append_library($libs, 'symengine')
 
 # creates the header file extconf.h, based on the results from all of the
