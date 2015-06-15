@@ -14,6 +14,9 @@ HEADER_DIRS = [
     # Check the ruby install locations
     INCLUDEDIR,
 
+    '/home/certik/repos/symengine/src',
+    '/local/certik/bld/profile/xt33omorophg/include',
+
     # Finally fall back to /usr
     '/usr/include'
 ]
