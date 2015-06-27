@@ -65,6 +65,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <type_traits>
 
 // #included from: catch_compiler_capabilities.h
 #define TWOBLUECUBES_CATCH_COMPILER_CAPABILITIES_HPP_INCLUDED
