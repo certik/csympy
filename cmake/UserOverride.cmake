@@ -26,7 +26,7 @@ endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     # clang
-    set(common "-std=c++11 -Wall -Wextra -fPIC")
+    set(common "-std=c++11 -Wall -Wextra -fPIC -D__extern_always_inline=inline")
     set(CMAKE_CXX_FLAGS_RELEASE_INIT "${common} -O3 -march=native -ffast-math -funroll-loops")
     set(CMAKE_CXX_FLAGS_DEBUG_INIT   "${common} -g")
 endif ()

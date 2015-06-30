@@ -105,6 +105,7 @@ echo "Running tests using installed SymEngine:"
 # C++
 cd $SOURCE_DIR/symengine/tests/basic/
 extra_libs=""
+extra_flags=""
 if [[ "${WITH_BFD}" != "" ]]; then
     extra_libs="$extra_libs -lbfd"
 fi
@@ -123,7 +124,11 @@ fi
 if [[ "${WITH_MPFR}" == "yes" ]] || [[ "${WITH_MPC}" == "yes" ]] || [[ "${WITH_ARB}" == "yes" ]]; then
     extra_libs="$extra_libs -lmpfr"
 fi
-${CXX} -std=c++0x -I$our_install_dir/include/ -I$SOURCE_DIR/symengine/teuchos -I$SOURCE_DIR/build/symengine/teuchos -L$our_install_dir/lib test_basic.cpp -lsymengine -lteuchos $extra_libs -lgmpxx -lgmp
+# See https://github.com/sympy/symengine/issues/486
+if [[ "${CXX}" == "clang"* ]]; then
+    extra_flags="$extra_flags -D__extern_always_inline=inline"
+fi
+${CXX} -std=c++0x $extra_flags -I$our_install_dir/include/ -I$SOURCE_DIR/symengine/teuchos -I$SOURCE_DIR/build/symengine/teuchos -L$our_install_dir/lib test_basic.cpp -lsymengine -lteuchos $extra_libs -lgmpxx -lgmp
 export LD_LIBRARY_PATH=$our_install_dir/lib:$LD_LIBRARY_PATH
 ./a.out
 # Python
