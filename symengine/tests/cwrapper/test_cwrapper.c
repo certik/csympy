@@ -12,10 +12,10 @@ abort(); \
 
 void test_cwrapper() {
     char* s;
-    basic x, y, z;
-    basic_init(x);
-    basic_init(y);
-    basic_init(z);
+    CRCPBasic x[1], y[1], z[1];
+    if (basic_placement_new(x,sizeof(x))) printf("Error in making x\n");
+    basic_placement_new(y,sizeof(y));
+    basic_placement_new(z,sizeof(z));
     symbol_set(x, "x");
     symbol_set(y, "y");
     symbol_set(z, "z");
@@ -23,8 +23,8 @@ void test_cwrapper() {
     s = basic_str(x);
     printf("Symbol : %s\n", s);
     basic_str_free(s);
-    basic e;
-    basic_init(e);
+    CRCPBasic e[1];
+    basic_placement_new(e,sizeof(e));
 
     integer_set_ui(e, 123);
     s = basic_str(e);
@@ -65,10 +65,10 @@ void test_cwrapper() {
     printf("integer_get_mpz(e): %ld\n", mpz_get_ui(test));
 
     mpz_clear(test);
-    basic_free(e);
-    basic_free(x);
-    basic_free(y);
-    basic_free(z);
+    basic_placement_free(e);
+    basic_placement_free(x);
+    basic_placement_free(y);
+    basic_placement_free(z);
     basic_str_free(s);
 }
 
@@ -114,32 +114,32 @@ void test_CVecBasic()
     CVecBasic *vec = vecbasic_new();
     SYMENGINE_ASSERT_DO_C(vecbasic_size(vec) == 0);
 
-    basic x;
-    basic_init(x);
+    CRCPBasic x[1];
+    basic_placement_new(x,sizeof(x));
     symbol_set(x, "x");
     vecbasic_push_back(vec, x);
 
     SYMENGINE_ASSERT_DO_C(vecbasic_size(vec) == 1);
 
-    basic y;
-    basic_init(y);
+    CRCPBasic y[1];
+    basic_placement_new(y,sizeof(y));
     vecbasic_get(vec, 0, y);
 
     // TODO: enable this once basic_eq() is implemented
-    // SYMENGINE_ASSERT_DO_C(basic_eq(x, y));
+    assert(basic_eq(x, y));
 
     vecbasic_free(vec);
-    basic_free(x);
-    basic_free(y);
+    basic_placement_free(x);
+    basic_placement_free(y);
 }
 
 void test_get_args()
 {
-    basic x, y, z, e;
-    basic_init(x);
-    basic_init(y);
-    basic_init(z);
-    basic_init(e);
+    CRCPBasic x[1], y[1], z[1], e[1];
+    basic_placement_new(x,sizeof(x));
+    basic_placement_new(y,sizeof(y));
+    basic_placement_new(z,sizeof(z));
+    basic_placement_new(e,sizeof(e));
     symbol_set(x, "x");
     symbol_set(y, "y");
     symbol_set(z, "z");
@@ -154,10 +154,10 @@ void test_get_args()
     SYMENGINE_ASSERT_DO_C(vecbasic_size(args) == 3);
     vecbasic_free(args);
 
-    basic_free(e);
-    basic_free(x);
-    basic_free(y);
-    basic_free(z);
+    basic_placement_free(e);
+    basic_placement_free(x);
+    basic_placement_free(y);
+    basic_placement_free(z);
 }
 
 int main(int argc, char* argv[])
