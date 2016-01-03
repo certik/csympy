@@ -36,13 +36,20 @@ public:
         return zero;
     }
 
+    static RCP<const Basic> diff(const Symbol &self,
+            const RCP<const Symbol> &x) {
+        if (x->get_name() == self.get_name())
+            return one;
+        else
+            return zero;
+    }
+
 #define DIFF0(CLASS) \
 static RCP<const Basic> diff(const CLASS &self, \
         const RCP<const Symbol> &x) { \
     return zero; \
 }
 
-    DIFF0(Symbol)
     DIFF0(Log)
     DIFF0(UnivariatePolynomial)
     DIFF0(UnivariateSeries)
