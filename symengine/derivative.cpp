@@ -19,10 +19,12 @@ extern RCP<const Basic> i2;
 
 class DiffImplementation {
 public:
+    /*
     static RCP<const Basic> diff(const Basic &self,
             const RCP<const Symbol> &x) {
         return Derivative::create(self.rcp_from_this(), {x});
     }
+    */
 
     static RCP<const Basic> diff(const Number &self,
             const RCP<const Symbol> &x) {
@@ -33,6 +35,39 @@ public:
             const RCP<const Symbol> &x) {
         return zero;
     }
+
+#define DIFF0(CLASS) \
+static RCP<const Basic> diff(const CLASS &self, \
+        const RCP<const Symbol> &x) { \
+    return zero; \
+}
+
+    DIFF0(Symbol)
+    DIFF0(Log)
+    DIFF0(UnivariatePolynomial)
+    DIFF0(UnivariateSeries)
+    DIFF0(Sinh)
+    DIFF0(Cosh)
+    DIFF0(Tanh)
+    DIFF0(Coth)
+    DIFF0(ASinh)
+    DIFF0(ACosh)
+    DIFF0(ATanh)
+    DIFF0(ACoth)
+    DIFF0(ASech)
+    DIFF0(LambertW)
+    DIFF0(Zeta)
+    DIFF0(KroneckerDelta)
+    DIFF0(Dirichlet_eta)
+    DIFF0(FunctionWrapper)
+    DIFF0(UpperGamma)
+    DIFF0(LowerGamma)
+    DIFF0(Gamma)
+    DIFF0(LeviCivita)
+    DIFF0(Derivative)
+    DIFF0(FunctionSymbol)
+    DIFF0(Subs)
+    DIFF0(Abs)
 
     static RCP<const Basic> diff(const Add &self,
             const RCP<const Symbol> &x) {
