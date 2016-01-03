@@ -44,13 +44,17 @@ public:
             return zero;
     }
 
+    static RCP<const Basic> diff(const Log &self,
+            const RCP<const Symbol> &x) {
+        return mul(div(one, self.get_arg()), self.get_arg()->diff(x));
+    }
+
 #define DIFF0(CLASS) \
 static RCP<const Basic> diff(const CLASS &self, \
         const RCP<const Symbol> &x) { \
     return zero; \
 }
 
-    DIFF0(Log)
     DIFF0(UnivariatePolynomial)
     DIFF0(UnivariateSeries)
     DIFF0(Sinh)
