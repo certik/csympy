@@ -146,14 +146,13 @@ public:
 
     static RCP<const Basic> diff(const FunctionSymbol &self,
             const RCP<const Symbol> &x) {
-        /*
         RCP<const Basic> diff = zero, t;
-        RCP<const Basic> self = rcp_from_this();
+        RCP<const Basic> self_ = self.rcp_from_this();
         RCP<const Symbol> s;
         std::string name;
         unsigned count  = 0;
         bool found_x = false;
-        for (const auto &a : arg_) {
+        for (const auto &a : self.get_args()) {
             if (eq(*a, *x)) {
                 found_x = true;
                 count++;
@@ -162,26 +161,26 @@ public:
             }
         }
         if (count == 1 and found_x) {
-            return Derivative::create(self, {x});
+            return Derivative::create(self_, {x});
         }
-        for (unsigned i = 0; i < arg_.size(); i++) {
-            t = arg_[i]->diff(x);
+        for (unsigned i = 0; i < self.get_args().size(); i++) {
+            t = self.get_args()[i]->diff(x);
             if (neq(*t, *zero)) {
                 name = "x";
                 do {
                     name = "_" + name;
                     s = symbol(name);
-                } while (has_symbol(*self, s));
-                vec_basic v = arg_;
+                } while (has_symbol(*self_, s));
+                vec_basic v = self.get_args();
                 v[i] = s;
                 map_basic_basic m;
-                insert(m, v[i], arg_[i]);
-                diff = add(diff, mul(t, make_rcp<const Subs>(Derivative::create(create(v), {v[i]}), m)));
+                insert(m, v[i], self.get_args()[i]);
+                diff = add(diff, mul(t,
+                    make_rcp<const Subs>(Derivative::create(self.create(v),
+                            {v[i]}), m)));
             }
         }
         return diff;
-        */
-        return zero;
     }
 
     static RCP<const Basic> diff(const LambertW &self,
