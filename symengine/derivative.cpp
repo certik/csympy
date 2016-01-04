@@ -57,6 +57,14 @@ public:
             return Derivative::create(self.rcp_from_this(), {x});
     }
 
+    static RCP<const Basic> diff(const Zeta &self,
+            const RCP<const Symbol> &x) {
+        // TODO: check if it is differentiated wrt s
+        return mul(mul(mul(minus_one, self.get_s()),
+                zeta(add(self.get_s(), one), self.get_a())),
+                self.get_a()->diff(x));
+    }
+
 #define DIFF0(CLASS) \
 static RCP<const Basic> diff(const CLASS &self, \
         const RCP<const Symbol> &x) { \
@@ -75,7 +83,6 @@ static RCP<const Basic> diff(const CLASS &self, \
     DIFF0(ACoth)
     DIFF0(ASech)
     DIFF0(LambertW)
-    DIFF0(Zeta)
     DIFF0(KroneckerDelta)
     DIFF0(Dirichlet_eta)
     DIFF0(FunctionWrapper)
