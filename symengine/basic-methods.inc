@@ -1,6 +1,8 @@
 class EvalRealDoubleVisitorFinal;
+class EvalComplexDoubleVisitorFinal;
 
 #define SYMENGINE_INCLUDE_METHODS(SUFFIX) \
 virtual void accept(Visitor &v) const SUFFIX; \
 virtual void accept_EvalRealDoubleVisitorFinal(EvalRealDoubleVisitorFinal &v) const SUFFIX; \
+virtual void accept_EvalComplexDoubleVisitorFinal(EvalComplexDoubleVisitorFinal &v) const SUFFIX; \
 virtual RCP<const Basic> diff(const RCP<const Symbol> &x) const SUFFIX;

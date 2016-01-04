@@ -283,6 +283,16 @@ public:
 #endif
 };
 
+class EvalComplexDoubleVisitorFinal : public BaseVisitor<EvalComplexDoubleVisitorFinal, EvalComplexDoubleVisitor> {
+public:
+    using EvalComplexDoubleVisitor::bvisit;
+
+    std::complex<double> apply(const Basic &b) {
+        b.accept_EvalComplexDoubleVisitorFinal(*this);
+        return result_;
+    }
+};
+
 
 /*
  * These two seem to be equivalent and about the same fast.
@@ -450,7 +460,7 @@ double eval_double(const Basic &b) {
 }
 
 std::complex<double> eval_complex_double(const Basic &b) {
-    EvalComplexDoubleVisitor v;
+    EvalComplexDoubleVisitorFinal v;
     return v.apply(b);
 }
 
@@ -470,6 +480,16 @@ void CLASS::accept_EvalRealDoubleVisitorFinal(EvalRealDoubleVisitorFinal &v) con
 }
 
 #define SYMENGINE_ENUM(TypeID, Class) IMPLEMENT_ACCEPT(Class)
+#include "symengine/type_codes.inc"
+#undef SYMENGINE_ENUM
+
+
+#define IMPLEMENT_COMPLEX_ACCEPT(CLASS) \
+void CLASS::accept_EvalComplexDoubleVisitorFinal(EvalComplexDoubleVisitorFinal &v) const { \
+    v.bvisit(*this); \
+}
+
+#define SYMENGINE_ENUM(TypeID, Class) IMPLEMENT_COMPLEX_ACCEPT(Class)
 #include "symengine/type_codes.inc"
 #undef SYMENGINE_ENUM
 
