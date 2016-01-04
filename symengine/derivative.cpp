@@ -19,12 +19,37 @@ extern RCP<const Basic> i2;
 
 class DiffImplementation {
 public:
-    /*
+#ifndef debug_methods
+
     static RCP<const Basic> diff(const Basic &self,
             const RCP<const Symbol> &x) {
         return Derivative::create(self.rcp_from_this(), {x});
     }
-    */
+
+#else
+    // Here we do not have a 'Basic' fallback, but rather must implement all
+    // virtual methods explicitly (if we miss one, the code will not compile).
+    // This is useful to check that we have implemented all methods that we
+    // wanted.
+
+#define DIFF0(CLASS) \
+static RCP<const Basic> diff(const CLASS &self, \
+        const RCP<const Symbol> &x) { \
+    return Derivative::create(self.rcp_from_this(), {x}); \
+}
+
+    DIFF0(UnivariatePolynomial)
+    DIFF0(UnivariateSeries)
+    DIFF0(KroneckerDelta)
+    DIFF0(Dirichlet_eta)
+    DIFF0(FunctionWrapper)
+    DIFF0(UpperGamma)
+    DIFF0(LowerGamma)
+    DIFF0(Gamma)
+    DIFF0(LeviCivita)
+
+#endif
+
 
     static RCP<const Basic> diff(const Number &self,
             const RCP<const Symbol> &x) {
@@ -191,22 +216,6 @@ public:
         return mul(div(lambertw_val, mul(self.get_arg(),
                 add(lambertw_val, one))), self.get_arg()->diff(x));
     }
-
-#define DIFF0(CLASS) \
-static RCP<const Basic> diff(const CLASS &self, \
-        const RCP<const Symbol> &x) { \
-    return zero; \
-}
-
-    DIFF0(UnivariatePolynomial)
-    DIFF0(UnivariateSeries)
-    DIFF0(KroneckerDelta)
-    DIFF0(Dirichlet_eta)
-    DIFF0(FunctionWrapper)
-    DIFF0(UpperGamma)
-    DIFF0(LowerGamma)
-    DIFF0(Gamma)
-    DIFF0(LeviCivita)
 
     static RCP<const Basic> diff(const Add &self,
             const RCP<const Symbol> &x) {
