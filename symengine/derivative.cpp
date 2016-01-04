@@ -366,44 +366,15 @@ static RCP<const Basic> diff(const CLASS &self, \
     }
 };
 
-#define DIFF2(CLASS) \
-RCP<const Basic> CLASS::diff2(const RCP<const Symbol> &x) const { \
+#define IMPLEMENT_DIFF(CLASS) \
+RCP<const Basic> CLASS::diff(const RCP<const Symbol> &x) const { \
     return DiffImplementation::diff(*this, x); \
 };
 
 
-#define SYMENGINE_ENUM(TypeID, Class) DIFF2(Class)
+#define SYMENGINE_ENUM(TypeID, Class) IMPLEMENT_DIFF(Class)
 #include "symengine/type_codes.inc"
 #undef SYMENGINE_ENUM
-
-
-#define IMPLEMENT_DIFF(CLASS) \
-RCP<const Basic> CLASS::diff(const RCP<const Symbol> &x) const \
-{ \
-    return Derivative::create(rcp_from_this(), {x}); \
-}
-
-#define IMPLEMENT_DIFF0(CLASS) \
-RCP<const Basic> CLASS::diff(const RCP<const Symbol> &x) const \
-{ \
-    return zero; \
-}
-
-IMPLEMENT_DIFF(FunctionWrapper)
-IMPLEMENT_DIFF(UpperGamma)
-IMPLEMENT_DIFF(LowerGamma)
-IMPLEMENT_DIFF(Gamma)
-IMPLEMENT_DIFF(LeviCivita)
-IMPLEMENT_DIFF(KroneckerDelta)
-IMPLEMENT_DIFF(Dirichlet_eta)
-IMPLEMENT_DIFF(UnivariateSeries)
-
-IMPLEMENT_DIFF0(RealDouble)
-IMPLEMENT_DIFF0(ComplexDouble)
-IMPLEMENT_DIFF0(Complex)
-IMPLEMENT_DIFF0(Rational)
-IMPLEMENT_DIFF0(Integer)
-IMPLEMENT_DIFF0(NumberWrapper)
 
 
 } // SymEngine
