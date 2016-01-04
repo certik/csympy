@@ -77,6 +77,125 @@ public:
                 self.get_arg()->diff(x));
     }
 
+    static RCP<const Basic> diff(const ATanh &self,
+            const RCP<const Symbol> &x) {
+        return mul(div(one, sub(one, pow(self.get_arg(), i2))),
+                self.get_arg()->diff(x));
+    }
+
+    static RCP<const Basic> diff(const ACosh &self,
+            const RCP<const Symbol> &x) {
+        return mul(div(one, sqrt(sub(pow(self.get_arg(), i2), one))),
+                self.get_arg()->diff(x));
+    }
+
+    static RCP<const Basic> diff(const ASinh &self,
+            const RCP<const Symbol> &x) {
+        return mul(div(one, sqrt(add(pow(self.get_arg(), i2), one))),
+                self.get_arg()->diff(x));
+    }
+
+    static RCP<const Basic> diff(const Coth &self,
+            const RCP<const Symbol> &x) {
+        return mul(div(minus_one, pow(sinh(self.get_arg()), i2)),
+                self.get_arg()->diff(x));
+    }
+
+    static RCP<const Basic> diff(const Tanh &self,
+            const RCP<const Symbol> &x) {
+        return mul(sub(one, pow(tanh(self.get_arg()), i2)),
+                self.get_arg()->diff(x));
+    }
+
+    static RCP<const Basic> diff(const Cosh &self,
+            const RCP<const Symbol> &x) {
+        return mul(sinh(self.get_arg()), self.get_arg()->diff(x));
+    }
+
+    static RCP<const Basic> diff(const Sinh &self,
+            const RCP<const Symbol> &x) {
+        return mul(cosh(self.get_arg()), self.get_arg()->diff(x));
+    }
+
+    static RCP<const Basic> diff(const Subs &self,
+            const RCP<const Symbol> &x) {
+        /*
+        RCP<const Basic> diff = zero, t;
+        if (dict_.count(x) == 0) {
+            diff = arg_->diff(x)->subs(dict_);
+        }
+        for (const auto &p: dict_) {
+            t = p.second->diff(x);
+            if (neq(*t, *zero)) {
+                if (is_a<Symbol>(*p.first)) {
+                    diff = add(diff, mul(t, arg_->diff(rcp_static_cast<const Symbol>(p.first))->subs(dict_)));
+                } else {
+                    return Derivative::create(rcp_from_this(), {x});
+                }
+            }
+        }
+        return diff;
+        */
+        return zero;
+    }
+
+    static RCP<const Basic> diff(const Derivative &self,
+            const RCP<const Symbol> &x) {
+        if (eq(*(self.get_arg()->diff(x)), *zero)) return zero;
+        vec_basic t = self.get_symbols();
+        t.push_back(x);
+        return Derivative::create(self.get_arg(), t);
+    }
+
+    static RCP<const Basic> diff(const FunctionSymbol &self,
+            const RCP<const Symbol> &x) {
+        /*
+        RCP<const Basic> diff = zero, t;
+        RCP<const Basic> self = rcp_from_this();
+        RCP<const Symbol> s;
+        std::string name;
+        unsigned count  = 0;
+        bool found_x = false;
+        for (const auto &a : arg_) {
+            if (eq(*a, *x)) {
+                found_x = true;
+                count++;
+            } else if (count < 2 and neq(*a->diff(x), *zero)) {
+                count++;
+            }
+        }
+        if (count == 1 and found_x) {
+            return Derivative::create(self, {x});
+        }
+        for (unsigned i = 0; i < arg_.size(); i++) {
+            t = arg_[i]->diff(x);
+            if (neq(*t, *zero)) {
+                name = "x";
+                do {
+                    name = "_" + name;
+                    s = symbol(name);
+                } while (has_symbol(*self, s));
+                vec_basic v = arg_;
+                v[i] = s;
+                map_basic_basic m;
+                insert(m, v[i], arg_[i]);
+                diff = add(diff, mul(t, make_rcp<const Subs>(Derivative::create(create(v), {v[i]}), m)));
+            }
+        }
+        return diff;
+        */
+        return zero;
+    }
+
+    static RCP<const Basic> diff(const LambertW &self,
+            const RCP<const Symbol> &x) {
+        // check http://en.wikipedia.org/wiki/Lambert_W_function#Derivative
+        // for the equation
+        RCP<const Basic> lambertw_val = lambertw(self.get_arg());
+        return mul(div(lambertw_val, mul(self.get_arg(),
+                add(lambertw_val, one))), self.get_arg()->diff(x));
+    }
+
 #define DIFF0(CLASS) \
 static RCP<const Basic> diff(const CLASS &self, \
         const RCP<const Symbol> &x) { \
@@ -85,14 +204,6 @@ static RCP<const Basic> diff(const CLASS &self, \
 
     DIFF0(UnivariatePolynomial)
     DIFF0(UnivariateSeries)
-    DIFF0(Sinh)
-    DIFF0(Cosh)
-    DIFF0(Tanh)
-    DIFF0(Coth)
-    DIFF0(ASinh)
-    DIFF0(ACosh)
-    DIFF0(ATanh)
-    DIFF0(LambertW)
     DIFF0(KroneckerDelta)
     DIFF0(Dirichlet_eta)
     DIFF0(FunctionWrapper)
@@ -100,9 +211,6 @@ static RCP<const Basic> diff(const CLASS &self, \
     DIFF0(LowerGamma)
     DIFF0(Gamma)
     DIFF0(LeviCivita)
-    DIFF0(Derivative)
-    DIFF0(FunctionSymbol)
-    DIFF0(Subs)
 
     static RCP<const Basic> diff(const Add &self,
             const RCP<const Symbol> &x) {
