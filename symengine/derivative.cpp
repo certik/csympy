@@ -49,6 +49,14 @@ public:
         return mul(div(one, self.get_arg()), self.get_arg()->diff(x));
     }
 
+    static RCP<const Basic> diff(const Abs &self,
+            const RCP<const Symbol> &x) {
+        if (eq(*self.get_arg()->diff(x), *zero))
+            return zero;
+        else
+            return Derivative::create(self.rcp_from_this(), {x});
+    }
+
 #define DIFF0(CLASS) \
 static RCP<const Basic> diff(const CLASS &self, \
         const RCP<const Symbol> &x) { \
@@ -78,7 +86,6 @@ static RCP<const Basic> diff(const CLASS &self, \
     DIFF0(Derivative)
     DIFF0(FunctionSymbol)
     DIFF0(Subs)
-    DIFF0(Abs)
 
     static RCP<const Basic> diff(const Add &self,
             const RCP<const Symbol> &x) {
