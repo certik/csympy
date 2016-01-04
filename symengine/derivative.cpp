@@ -364,9 +364,6 @@ static RCP<const Basic> diff(const CLASS &self, \
             pow(self.get_num(), i2))), div(self.get_num(),
             self.get_den())->diff(x));
     }
-
-    // ...and so on for all the other functions that want to return a specific
-    // derivative, instead of the general diff(const Basic &, ...) one.
 };
 
 #define DIFF2(CLASS) \
