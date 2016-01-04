@@ -71,6 +71,12 @@ public:
                 self.get_arg())), self.get_arg()->diff(x));
     }
 
+    static RCP<const Basic> diff(const ACoth &self,
+            const RCP<const Symbol> &x) {
+        return mul(div(one, sub(one, pow(self.get_arg(), i2))),
+                self.get_arg()->diff(x));
+    }
+
 #define DIFF0(CLASS) \
 static RCP<const Basic> diff(const CLASS &self, \
         const RCP<const Symbol> &x) { \
@@ -86,7 +92,6 @@ static RCP<const Basic> diff(const CLASS &self, \
     DIFF0(ASinh)
     DIFF0(ACosh)
     DIFF0(ATanh)
-    DIFF0(ACoth)
     DIFF0(LambertW)
     DIFF0(KroneckerDelta)
     DIFF0(Dirichlet_eta)
