@@ -243,6 +243,16 @@ public:
     };
 };
 
+class EvalRealDoubleVisitorFinal : public BaseVisitor<EvalRealDoubleVisitorFinal, EvalRealDoubleVisitor> {
+public:
+    using EvalRealDoubleVisitor::bvisit;
+
+    double apply(const Basic &b) {
+        b.accept_EvalRealDoubleVisitorFinal(*this);
+        return result_;
+    }
+};
+
 class EvalComplexDoubleVisitor : public BaseVisitor<EvalComplexDoubleVisitor, EvalDoubleVisitor<std::complex<double>>> {
 public:
 
@@ -447,5 +457,21 @@ std::complex<double> eval_complex_double(const Basic &b) {
 double eval_double_single_dispatch(const Basic &b) {
     return table_eval_double[b.get_type_code()](b);
 }
+
+double eval_double_single_dispatch2(const Basic &b) {
+    EvalRealDoubleVisitorFinal v;
+    return v.apply(b);
+}
+
+
+#define IMPLEMENT_ACCEPT(CLASS) \
+void CLASS::accept_EvalRealDoubleVisitorFinal(EvalRealDoubleVisitorFinal &v) const { \
+    v.bvisit(*this); \
+}
+
+#define SYMENGINE_ENUM(TypeID, Class) IMPLEMENT_ACCEPT(Class)
+#include "symengine/type_codes.inc"
+#undef SYMENGINE_ENUM
+
 
 } // SymEngine

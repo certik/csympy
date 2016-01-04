@@ -20,6 +20,8 @@ double eval_double_single_dispatch(const Basic &b);
 
 std::complex<double> eval_complex_double(const Basic &b);
 
+double eval_double_single_dispatch2(const Basic &b);
+
 } // SymEngine
 
 #endif

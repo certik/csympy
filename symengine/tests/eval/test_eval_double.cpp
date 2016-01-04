@@ -87,11 +87,15 @@ TEST_CASE("eval_double: eval_double", "[eval_double]")
     for (unsigned i = 0; i < vec.size(); i++) {
         double val = eval_double_single_dispatch(*vec[i].first);
         REQUIRE(::fabs(val - vec[i].second) < 1e-12);
+        val = eval_double_single_dispatch2(*vec[i].first);
+        REQUIRE(::fabs(val - vec[i].second) < 1e-12);
     }
 
     // Symbol must raise an exception
     CHECK_THROWS_AS(eval_double(*symbol("x")), std::runtime_error);
     CHECK_THROWS_AS(eval_double_single_dispatch(*symbol("x")),
+            std::runtime_error);
+    CHECK_THROWS_AS(eval_double_single_dispatch2(*symbol("x")),
             std::runtime_error);
 
     // TODO: this is not implemented yet, so we check that it raises an
@@ -99,9 +103,13 @@ TEST_CASE("eval_double: eval_double", "[eval_double]")
     CHECK_THROWS_AS(eval_double(*levi_civita({r1})), std::runtime_error);
     CHECK_THROWS_AS(eval_double_single_dispatch(*levi_civita({r1})),
             std::runtime_error);
+    CHECK_THROWS_AS(eval_double_single_dispatch2(*levi_civita({r1})),
+            std::runtime_error);
 
     CHECK_THROWS_AS(eval_double(*zeta(r1, r2)), std::runtime_error);
     CHECK_THROWS_AS(eval_double_single_dispatch(*zeta(r1, r2)),
+            std::runtime_error);
+    CHECK_THROWS_AS(eval_double_single_dispatch2(*zeta(r1, r2)),
             std::runtime_error);
     // ... we don't test the rest of functions that are not implemented.
 }
