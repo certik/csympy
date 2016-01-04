@@ -119,24 +119,21 @@ public:
 
     static RCP<const Basic> diff(const Subs &self,
             const RCP<const Symbol> &x) {
-        /*
         RCP<const Basic> diff = zero, t;
-        if (dict_.count(x) == 0) {
-            diff = arg_->diff(x)->subs(dict_);
+        if (self.get_dict().count(x) == 0) {
+            diff = self.get_arg()->diff(x)->subs(self.get_dict());
         }
-        for (const auto &p: dict_) {
+        for (const auto &p: self.get_dict()) {
             t = p.second->diff(x);
             if (neq(*t, *zero)) {
                 if (is_a<Symbol>(*p.first)) {
-                    diff = add(diff, mul(t, arg_->diff(rcp_static_cast<const Symbol>(p.first))->subs(dict_)));
+                    diff = add(diff, mul(t, self.get_arg()->diff(rcp_static_cast<const Symbol>(p.first))->subs(self.get_dict())));
                 } else {
-                    return Derivative::create(rcp_from_this(), {x});
+                    return Derivative::create(self.rcp_from_this(), {x});
                 }
             }
         }
         return diff;
-        */
-        return zero;
     }
 
     static RCP<const Basic> diff(const Derivative &self,
