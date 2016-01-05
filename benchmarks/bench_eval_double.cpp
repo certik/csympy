@@ -8,6 +8,8 @@
 #include <symengine/integer.h>
 #include <symengine/mul.h>
 #include <symengine/pow.h>
+#include <symengine/constants.h>
+#include <symengine/functions.h>
 #include <symengine/eval_double.h>
 
 
@@ -15,15 +17,18 @@ using SymEngine::Basic;
 using SymEngine::symbol;
 using SymEngine::integer;
 using SymEngine::RCP;
+using SymEngine::make_rcp;
+using SymEngine::Sin;
+using SymEngine::Cos;
 
 RCP<const Basic> get_eval_double_expression()
 {
-    RCP<const Basic> e = sin(integer(1));
+    RCP<const Basic> e = SymEngine::EulerGamma;
 
-    for(int i = 0; i < 10000; i++) {
-        e = pow(add(mul(add(e, pow(integer(2), integer(-3))),
-                integer(3)), integer(1)), div(integer(2), integer(3)));
+    for(int i = 0; i < 100000; i++) {
+        e = make_rcp<const Sin>(make_rcp<const Cos>(e));
     }
+    //std::cout << *e << std::endl;
     return e;
 }
 

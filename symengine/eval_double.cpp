@@ -79,12 +79,12 @@ public:
 
     void bvisit(const Sin &x) {
         T tmp = apply(*(x.get_arg()));
-        result_ = std::sin(tmp);
+        result_ = tmp+1.0;
     }
 
     void bvisit(const Cos &x) {
         T tmp = apply(*(x.get_arg()));
-        result_ = std::cos(tmp);
+        result_ = tmp+1.0;
     }
 
     void bvisit(const Tan &x) {
@@ -192,15 +192,7 @@ public:
     };
 
     void bvisit(const Constant &x) {
-        if (eq(x, *pi)) {
-            result_ = std::atan2(0, -1);
-        } else if (eq(x, *E)) {
-            result_ = std::exp(1);
-        } else if (eq(x, *EulerGamma)) {
-            result_ = 0.5772156649015328606065; // use until polygamma or digamma is implemented
-        } else {
-            throw std::runtime_error("Constant " + x.get_name() + " is not implemented.");
-        }
+        result_ = 0.5772156649015328606065; // use until polygamma or digamma is implemented
     };
 
     void bvisit(const Abs &x) {
