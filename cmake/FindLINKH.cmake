@@ -1,4 +1,4 @@
-find_path(LINKH_INCLUDE_DIR link.h)
+find_path(LINKH_INCLUDE_DIR NAMES link.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LINKH DEFAULT_MSG LINKH_INCLUDE_DIR)
