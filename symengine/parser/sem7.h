@@ -87,6 +87,27 @@ static int count(const Base &b) {
         b.u);
 }
 
+static int count2(const Base &b) {
+    return std::visit([](auto&& x) {
+            using T = std::decay_t<decltype(x)>;
+            if constexpr (std::is_same_v<T, Symbol>) {
+                return 1;
+            } else if constexpr (std::is_same_v<T, BinOp>) {
+                int c = 0;
+                c += count2(*x.left);
+                c += count2(*x.right);
+                return c;
+            } else if constexpr (std::is_same_v<T, Pow>) {
+                int c = 0;
+                c += count2(*x.base);
+                c += count2(*x.exp);
+                return c;
+            } else {
+                return 0;
+            }
+        }, b.u);
+}
+
 
 #define TYPE Base*
 #define ADD(x, y) al.make_new<Base>(BinOp(BinOpType::Add, x, y))
