@@ -119,6 +119,7 @@ static int count2(const Base &b) {
 #define INTEGER(x) al.make_new<Base>(Integer(x))
 //#define PRINT(x) std::cout << (long int)x << std::endl; //x->d.binop.right->type << std::endl
 #define PRINT(x) std::cout << count(*x) << std::endl;
+//#define PRINT(x) std::cout << count2(*x) << std::endl;
 
 
 #endif
