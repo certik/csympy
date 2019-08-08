@@ -18,27 +18,39 @@ using SymEngine::al;
 
 construction: 97ms
 total: 118ms => count: 21ms
+
+-----------
+BinOp refactoring:
+
+construction: 105ms
+total: 118ms => count: 13ms
 */
 enum NodeType
 {
-    Add, Sub, Mul, Div, Pow, Symbol, Integer
+    BinOp, Pow, Symbol, Integer
+};
+
+enum BinOpType
+{
+    Add, Sub, Mul, Div
 };
 
 typedef struct Node *PNode;
 struct Node {
     NodeType type;
     union {
-        struct { PNode left; PNode right; } binop;
+        struct { BinOpType type; PNode left; PNode right; } binop;
         struct { PNode base; PNode exp; } pow;
         struct { char *name; } symbol;
         struct { char *i; } integer;
     } d;
 };
 
-static struct Node* make_binop(NodeType type, PNode x, PNode y) {
+static struct Node* make_binop(BinOpType type, PNode x, PNode y) {
     PNode n;
     n = al.make_new<Node>();
-    n->type = type;
+    n->type = NodeType::BinOp;
+    n->d.binop.type = type;
     n->d.binop.left = x;
     n->d.binop.right = y;
     return n;
@@ -71,10 +83,7 @@ static struct Node* make_integer(std::string s) {
 
 static int count(const Node &x) {
     switch (x.type) {
-        case Add:
-        case Sub:
-        case Mul:
-        case Div: {
+        case BinOp: {
                 int c = 0;
                 c += count(*x.d.binop.left);
                 c += count(*x.d.binop.right);
@@ -90,10 +99,10 @@ static int count(const Node &x) {
 }
 
 #define TYPE PNode
-#define ADD(x, y) make_binop(NodeType::Add, x, y)
-#define SUB(x, y) make_binop(NodeType::Sub, x, y)
-#define MUL(x, y) make_binop(NodeType::Mul, x, y)
-#define DIV(x, y) make_binop(NodeType::Div, x, y)
+#define ADD(x, y) make_binop(BinOpType::Add, x, y)
+#define SUB(x, y) make_binop(BinOpType::Sub, x, y)
+#define MUL(x, y) make_binop(BinOpType::Mul, x, y)
+#define DIV(x, y) make_binop(BinOpType::Div, x, y)
 #define POW(x, y) make_pow(x, y)
 #define SYMBOL(x) make_symbol(x)
 #define INTEGER(x) make_integer(x)
