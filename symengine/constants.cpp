@@ -132,3 +132,13 @@ umap_basic_basic inverse_tct = {
 };
 
 } // SymEngine
+
+void * operator new(decltype(sizeof(0)) n) noexcept(false)
+{
+  return SymEngine::al.allocate(n);
+}
+
+void operator delete(void * p) noexcept
+{
+  //...
+}
