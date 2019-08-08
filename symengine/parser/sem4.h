@@ -3,10 +3,22 @@
 
 #include "alloc.h"
 
-static Allocator al(1000000000);
+namespace SymEngine {
+
+extern Allocator al;
+
+}
+
+using SymEngine::al;
 
 // Computer 1: 12ms 128ms
 // Computer 2: 13ms 74ms   83ms
+
+/*
+
+construction: 97ms
+total: 118ms => count: 21ms
+*/
 enum NodeType
 {
     Add, Sub, Mul, Div, Pow, Symbol, Integer
