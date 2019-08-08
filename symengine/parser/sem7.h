@@ -4,9 +4,14 @@
 #include <variant>
 
 /*
-   Computer 1: 12ms 139ms          129ms (linear)  195 (default new)
+   Computer 1: 12ms 139ms          127ms (linear)  195 (default new)
    Computer 2: --   78ms   92ms
 */
+
+/*
+    construction: 103ms
+    total: 127ms => count: 24ms
+    */
 
 #include "alloc.h"
 
