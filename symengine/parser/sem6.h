@@ -6,6 +6,11 @@
    Computer 2: -    74ms   86ms
 */
 
+/*
+   99ms construction
+   111ms with count => count: 12ms
+   */
+
 #include "alloc.h"
 
 namespace SymEngine {
