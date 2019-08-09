@@ -150,10 +150,8 @@ class CountVisitor : public BaseWalkVisitor<CountVisitor>
     int c_;
 public:
     CountVisitor() : c_{0} {}
-    void bvisit(const struct BinOp &x) { }
-    void bvisit(const struct Pow &x) { }
+    template <typename T> void bvisit(const T &x) { }
     void bvisit(const struct Symbol &x) { c_ += 1; }
-    void bvisit(const struct Integer &x) { }
     int get_count() {
         return c_;
     }
