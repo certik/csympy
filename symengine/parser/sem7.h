@@ -9,8 +9,15 @@
 */
 
 /*
+   gcc 7.4.0
     construction: 103ms
     total: 127ms => count: 24ms
+   gcc 9.1.0
+    construction: 117ms
+    total: 132ms => count: 15ms
+    C++2a
+    construction: 117ms
+    total: 129ms => count: 12ms
     */
 
 #include "alloc.h"

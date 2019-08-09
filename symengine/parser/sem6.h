@@ -7,8 +7,16 @@
 */
 
 /*
+gcc 7.4.0
    99ms construction
    111ms with count => count: 12ms
+
+gcc 9.1.0
+    construction: 112ms
+    total: 128ms => count: 16ms
+    C++2a
+    construction: 111ms
+    total: 127ms => count: 16ms
    */
 
 #include "alloc.h"

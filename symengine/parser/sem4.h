@@ -20,10 +20,18 @@ construction: 97ms
 total: 118ms => count: 21ms
 
 -----------
+gcc 7.4.0
 BinOp refactoring:
 
 construction: 105ms
 total: 118ms => count: 13ms
+
+gcc 9.1.0
+construction: 117ms
+total: 132ms => count 15ms
+C++2a
+construction: 116ms
+total: 126ms => count 10ms
 */
 enum NodeType
 {
