@@ -117,6 +117,25 @@ static int count(const Node &x) {
     }
 }
 
+class Visitor
+{
+public:
+    virtual ~Visitor() {};
+    virtual void visit(const struct BinOp &x) = 0;
+    virtual void visit(const struct Pow &x) = 0;
+    virtual void visit(const struct Symbol &x) = 0;
+    virtual void visit(const struct Integer &x) = 0;
+};
+
+static void visit(const Node &x, Visitor &v) {
+    switch (x.type) {
+        case BinOp: { v.visit(x.d.binop); return; }
+        case Pow: { v.visit(x.d.pow); return; }
+        case Symbol: { v.visit(x.d.symbol); return; }
+        case Integer: { v.visit(x.d.integer); return; }
+    }
+}
+
 
 #define TYPE PNode
 #define ADD(x, y) make_binop(BinOpType::Add, x, y)
