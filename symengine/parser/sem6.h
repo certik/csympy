@@ -124,6 +124,26 @@ static int count(const Base &b) {
     return v.c;
 }
 
+class Count2Visitor
+{
+    int c_;
+public:
+    Count2Visitor() : c_{0} {}
+    void bvisit(const Symbol &x) { c_ += 1; }
+    void apply(const Base &b) {
+//        b.accept(*this);
+    }
+    int get_count() {
+        return c_;
+    }
+};
+
+static int count2(const Base &b) {
+    Count2Visitor v;
+    v.apply(b);
+    return v.get_count();
+}
+
 
 #define TYPE Base*
 #define ADD(x, y) al.make_new<BinOp>(BinOpType::Add, x, y)
