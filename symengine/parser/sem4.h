@@ -36,15 +36,34 @@ enum BinOpType
 };
 
 typedef struct Node *PNode;
+
+struct BinOp {
+    BinOpType type;
+    PNode left, right;
+};
+
+struct Pow {
+    PNode base, exp;
+};
+
+struct Symbol {
+    char *name;
+};
+
+struct Integer {
+    char *i;
+};
+
 struct Node {
     NodeType type;
     union {
-        struct { BinOpType type; PNode left; PNode right; } binop;
-        struct { PNode base; PNode exp; } pow;
-        struct { char *name; } symbol;
-        struct { char *i; } integer;
+        struct BinOp binop;
+        struct Pow pow;
+        struct Symbol symbol;
+        struct Integer integer;
     } d;
 };
+
 
 static struct Node* make_binop(BinOpType type, PNode x, PNode y) {
     PNode n;
@@ -97,6 +116,7 @@ static int count(const Node &x) {
         case Integer: return 0;
     }
 }
+
 
 #define TYPE PNode
 #define ADD(x, y) make_binop(BinOpType::Add, x, y)
