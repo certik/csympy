@@ -28,7 +28,7 @@ total: 118ms => count: 13ms
 */
 enum NodeType
 {
-    BinOp, Pow, Symbol, Integer
+    nt_BinOp, nt_Pow, nt_Symbol, nt_Integer
 };
 
 enum BinOpType
@@ -58,45 +58,45 @@ struct Integer {
 struct Node {
     NodeType type;
     union {
-        struct BinOp binop;
-        struct Pow pow;
-        struct Symbol symbol;
-        struct Integer integer;
+        BinOp binop;
+        Pow pow;
+        Symbol symbol;
+        Integer integer;
     } d;
 };
 
 
-static struct Node* make_binop(BinOpType type, PNode x, PNode y) {
+static Node* make_binop(BinOpType type, PNode x, PNode y) {
     PNode n;
     n = al.make_new<Node>();
-    n->type = NodeType::BinOp;
+    n->type = NodeType::nt_BinOp;
     n->d.binop.type = type;
     n->d.binop.left = x;
     n->d.binop.right = y;
     return n;
 }
 
-static struct Node* make_pow(PNode x, PNode y) {
+static Node* make_pow(PNode x, PNode y) {
     PNode n;
     n = al.make_new<Node>();
-    n->type = NodeType::Pow;
+    n->type = NodeType::nt_Pow;
     n->d.pow.base = x;
     n->d.pow.exp = y;
     return n;
 }
 
-static struct Node* make_symbol(std::string s) {
+static Node* make_symbol(std::string s) {
     PNode n;
     n = al.make_new<Node>();
-    n->type = NodeType::Symbol;
+    n->type = NodeType::nt_Symbol;
     n->d.symbol.name = &s[0];
     return n;
 }
 
-static struct Node* make_integer(std::string s) {
+static Node* make_integer(std::string s) {
     PNode n;
     n = al.make_new<Node>();
-    n->type = NodeType::Integer;
+    n->type = NodeType::nt_Integer;
     n->d.integer.i = &s[0];
     return n;
 }
@@ -105,18 +105,18 @@ class Visitor
 {
 public:
     virtual ~Visitor() {};
-    virtual void visit(const struct BinOp &x) = 0;
-    virtual void visit(const struct Pow &x) = 0;
-    virtual void visit(const struct Symbol &x) = 0;
-    virtual void visit(const struct Integer &x) = 0;
+    virtual void visit(const BinOp &x) = 0;
+    virtual void visit(const Pow &x) = 0;
+    virtual void visit(const Symbol &x) = 0;
+    virtual void visit(const Integer &x) = 0;
 };
 
 static void accept(const Node &x, Visitor &v) {
     switch (x.type) {
-        case BinOp: { v.visit(x.d.binop); return; }
-        case Pow: { v.visit(x.d.pow); return; }
-        case Symbol: { v.visit(x.d.symbol); return; }
-        case Integer: { v.visit(x.d.integer); return; }
+        case nt_BinOp: { v.visit(x.d.binop); return; }
+        case nt_Pow: { v.visit(x.d.pow); return; }
+        case nt_Symbol: { v.visit(x.d.symbol); return; }
+        case nt_Integer: { v.visit(x.d.integer); return; }
     }
 }
 
@@ -124,23 +124,23 @@ template <class Derived>
 class BaseWalkVisitor : public Visitor
 {
 public:
-    virtual void visit(const struct BinOp &x) {
+    virtual void visit(const BinOp &x) {
         apply(*x.left);
         apply(*x.right);
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    virtual void visit(const struct Pow &x) {
+    virtual void visit(const Pow &x) {
         apply(*x.base);
         apply(*x.exp);
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    virtual void visit(const struct Symbol &x) {
+    virtual void visit(const Symbol &x) {
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    virtual void visit(const struct Integer &x) {
+    virtual void visit(const Integer &x) {
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    void apply(const struct Node &b) {
+    void apply(const Node &b) {
         accept(b, *this);
     }
 };
@@ -151,7 +151,7 @@ class CountVisitor : public BaseWalkVisitor<CountVisitor>
 public:
     CountVisitor() : c_{0} {}
     template <typename T> void bvisit(const T &x) { }
-    void bvisit(const struct Symbol &x) { c_ += 1; }
+    void bvisit(const Symbol &x) { c_ += 1; }
     int get_count() {
         return c_;
     }
