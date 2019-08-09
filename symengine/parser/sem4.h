@@ -2,6 +2,7 @@
 #define SYMENGINE_PARSER_SEM4_H
 
 #include "alloc.h"
+#include "symengine/symengine_casts.h"
 
 namespace SymEngine {
 
@@ -100,23 +101,6 @@ static struct Node* make_integer(std::string s) {
     return n;
 }
 
-static int count(const Node &x) {
-    switch (x.type) {
-        case BinOp: {
-                int c = 0;
-                c += count(*x.d.binop.left);
-                c += count(*x.d.binop.right);
-                return c; }
-        case Pow: {
-                int c = 0;
-                c += count(*x.d.pow.base);
-                c += count(*x.d.pow.exp);
-                return c; }
-        case Symbol: return 1;
-        case Integer: return 0;
-    }
-}
-
 class Visitor
 {
 public:
@@ -127,13 +111,58 @@ public:
     virtual void visit(const struct Integer &x) = 0;
 };
 
-static void visit(const Node &x, Visitor &v) {
+static void accept(const Node &x, Visitor &v) {
     switch (x.type) {
         case BinOp: { v.visit(x.d.binop); return; }
         case Pow: { v.visit(x.d.pow); return; }
         case Symbol: { v.visit(x.d.symbol); return; }
         case Integer: { v.visit(x.d.integer); return; }
     }
+}
+
+template <class Derived>
+class BaseWalkVisitor : public Visitor
+{
+public:
+    virtual void visit(const struct BinOp &x) {
+        apply(*x.left);
+        apply(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const struct Pow &x) {
+        apply(*x.base);
+        apply(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const struct Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const struct Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const struct Node &b) {
+        accept(b, *this);
+    }
+};
+
+class CountVisitor : public BaseWalkVisitor<CountVisitor>
+{
+    int c_;
+public:
+    CountVisitor() : c_{0} {}
+    void bvisit(const struct BinOp &x) { }
+    void bvisit(const struct Pow &x) { }
+    void bvisit(const struct Symbol &x) { c_ += 1; }
+    void bvisit(const struct Integer &x) { }
+    int get_count() {
+        return c_;
+    }
+};
+
+static int count(const Node &b) {
+    CountVisitor v;
+    v.apply(b);
+    return v.get_count();
 }
 
 
