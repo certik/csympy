@@ -110,6 +110,8 @@ static void accept(const Base &b, Visitor &v) {
         b.u);
 }
 
+//FIXME: oscillates betwen aa and 1a, until it runs out.
+
 template <class Derived>
 class BaseWalkVisitor : public Visitor
 {
