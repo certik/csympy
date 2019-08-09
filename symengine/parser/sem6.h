@@ -155,7 +155,7 @@ class CountVisitor : public BaseWalkVisitor<CountVisitor>
     int c_;
 public:
     CountVisitor() : c_{0} {}
-    void bvisit(const Base &x) { }
+    template <typename T> void bvisit(const T &x) { }
     void bvisit(const Symbol &x) { c_ += 1; }
     int get_count() {
         return c_;
