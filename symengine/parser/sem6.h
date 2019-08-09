@@ -20,6 +20,7 @@ gcc 9.1.0
    */
 
 #include "alloc.h"
+#include "symengine/symengine_casts.h"
 
 namespace SymEngine {
 
@@ -110,26 +111,69 @@ public:
     }
 };
 
-class CountVisitor : public Visitor
+
+template <class Derived>
+class BaseVisitor : public Visitor
 {
 public:
-    int c=0;
     virtual void visit(const BinOp &x) {
-        c += count(*x.left);
-        c += count(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
     virtual void visit(const Pow &x) {
-        c += count(*x.base);
-        c += count(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    virtual void visit(const Symbol &x) { c += 1; }
-    virtual void visit(const Integer &x) { }
+    virtual void visit(const Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const Base &b) {
+        b.accept(*this);
+    }
+};
+
+template <class Derived>
+class BaseWalkVisitor : public Visitor
+{
+public:
+    virtual void visit(const BinOp &x) {
+        apply(*x.left);
+        apply(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Pow &x) {
+        apply(*x.base);
+        apply(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const Base &b) {
+        b.accept(*this);
+    }
+};
+
+class CountVisitor : public BaseWalkVisitor<CountVisitor>
+{
+    int c_;
+public:
+    CountVisitor() : c_{0} {}
+    template <typename T> void bvisit(const T &x) { }
+    void bvisit(const Symbol &x) { c_ += 1; }
+    int get_count() {
+        return c_;
+    }
 };
 
 static int count(const Base &b) {
     CountVisitor v;
-    b.accept(v);
-    return v.c;
+    v.apply(b);
+    return v.get_count();
 }
 
 
