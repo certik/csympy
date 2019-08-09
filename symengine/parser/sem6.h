@@ -12,6 +12,7 @@
    */
 
 #include "alloc.h"
+#include "symengine/symengine_casts.h"
 
 namespace SymEngine {
 
@@ -102,44 +103,67 @@ public:
     }
 };
 
-class CountVisitor : public Visitor
+
+template <class Derived>
+class BaseVisitor : public Visitor
 {
 public:
-    int c=0;
     virtual void visit(const BinOp &x) {
-        c += count(*x.left);
-        c += count(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
     virtual void visit(const Pow &x) {
-        c += count(*x.base);
-        c += count(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    virtual void visit(const Symbol &x) { c += 1; }
-    virtual void visit(const Integer &x) { }
+    virtual void visit(const Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const Base &b) {
+        b.accept(*this);
+    }
 };
 
-static int count(const Base &b) {
-    CountVisitor v;
-    b.accept(v);
-    return v.c;
-}
+template <class Derived>
+class BaseWalkVisitor : public Visitor
+{
+public:
+    virtual void visit(const BinOp &x) {
+        apply(*x.left);
+        apply(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Pow &x) {
+        apply(*x.base);
+        apply(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const Base &b) {
+        b.accept(*this);
+    }
+};
 
-class Count2Visitor
+class CountVisitor : public BaseWalkVisitor<CountVisitor>
 {
     int c_;
 public:
-    Count2Visitor() : c_{0} {}
+    CountVisitor() : c_{0} {}
+    void bvisit(const Base &x) { }
     void bvisit(const Symbol &x) { c_ += 1; }
-    void apply(const Base &b) {
-//        b.accept(*this);
-    }
     int get_count() {
         return c_;
     }
 };
 
-static int count2(const Base &b) {
-    Count2Visitor v;
+static int count(const Base &b) {
+    CountVisitor v;
     v.apply(b);
     return v.get_count();
 }
