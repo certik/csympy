@@ -87,6 +87,28 @@ static int count(const Base &b) {
         b.u);
 }
 
+class Visitor
+{
+public:
+    virtual ~Visitor() {};
+    virtual void visit(const BinOp &x) = 0;
+    virtual void visit(const Pow &x) = 0;
+    virtual void visit(const Symbol &x) = 0;
+    virtual void visit(const Integer &x) = 0;
+};
+
+static void accept(const Base &b, Visitor &v) {
+    return std::visit(
+        visitors{
+            [&v](const BinOp &x) { v.visit(x); return; },
+            [&v](const Pow &x) { v.visit(x); return; },
+            [&v](const Symbol &x) { v.visit(x); return; },
+            [&v](const Integer &x) { v.visit(x); return; },
+        },
+        b.u);
+}
+
+
 
 #define TYPE Base*
 #define ADD(x, y) al.make_new<Base>(BinOp(BinOpType::Add, x, y))
