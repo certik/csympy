@@ -14,6 +14,7 @@
     */
 
 #include "alloc.h"
+#include "symengine/symengine_casts.h"
 
 namespace SymEngine {
 
@@ -68,19 +69,19 @@ struct Base {
 
 
 
-static int count(const Base &b) {
+static int count2(const Base &b) {
     return std::visit(
         visitors{
             [](const Symbol &x) { return 1; },
             [](const BinOp &x) {
                 int c = 0;
-                c += count(*x.left);
-                c += count(*x.right);
+                c += count2(*x.left);
+                c += count2(*x.right);
                 return c; },
             [](const Pow &x) {
                 int c = 0;
-                c += count(*x.base);
-                c += count(*x.exp);
+                c += count2(*x.base);
+                c += count2(*x.exp);
                 return c; },
             [](const auto &x) { return 0; },
         },
@@ -106,6 +107,49 @@ static void accept(const Base &b, Visitor &v) {
             [&v](const Integer &x) { v.visit(x); return; },
         },
         b.u);
+}
+
+template <class Derived>
+class BaseWalkVisitor : public Visitor
+{
+public:
+    virtual void visit(const BinOp &x) {
+        apply(*x.left);
+        apply(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Pow &x) {
+        apply(*x.base);
+        apply(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    virtual void visit(const Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const Base &b) {
+        accept(b, *this);
+    }
+};
+
+class CountVisitor : public BaseWalkVisitor<CountVisitor>
+{
+    int c_;
+public:
+    CountVisitor() : c_{0} {}
+    template <typename T> void bvisit(const T &x) { }
+    void bvisit(const Symbol &x) { c_ += 1; }
+    int get_count() {
+        return c_;
+    }
+};
+
+static int count(const Base &b) {
+    CountVisitor v;
+    v.apply(b);
+    return v.get_count();
 }
 
 
