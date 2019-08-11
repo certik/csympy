@@ -127,7 +127,6 @@ public:
 };
 
 static void accept(const Base &b, Visitor &v) {
-    std::cout << "aa" << std::endl;
     std::visit(
         visitors{
             [&v](const BinOp &x) { v.visit(x); return; },
@@ -138,33 +137,25 @@ static void accept(const Base &b, Visitor &v) {
         b.u);
 }
 
-//FIXME: oscillates betwen aa and 1a, until it runs out.
 
 template <class Derived>
 class BaseWalkVisitor : public Visitor
 {
 public:
     virtual void visit(const BinOp &x) {
-        std::cout << "1a" << std::endl;
         apply(*x.left);
-        std::cout << "1b" << std::endl;
         apply(*x.right);
-        std::cout << "1c" << std::endl;
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
-        std::cout << "1d" << std::endl;
     }
     virtual void visit(const Pow &x) {
-        std::cout << "2" << std::endl;
         apply(*x.base);
         apply(*x.exp);
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
     virtual void visit(const Symbol &x) {
-        std::cout << "3" << std::endl;
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
     virtual void visit(const Integer &x) {
-        std::cout << "4" << std::endl;
         SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
     void apply(const Base &b) {
