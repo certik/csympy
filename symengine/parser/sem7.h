@@ -123,56 +123,54 @@ template <class Derived>
 class BaseWalkVisitor
 {
 public:
-    void visit(const BinOp &x) {
-        apply(*x.left);
-        apply(*x.right);
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    int visit(const BinOp &x) {
+        int c=0;
+        c += apply(*x.left);
+        c += apply(*x.right);
+        c += SymEngine::down_cast<Derived *>(this)->bvisit(x);
+        return c;
     }
-    void visit(const Pow &x) {
-        apply(*x.base);
-        apply(*x.exp);
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    int visit(const Pow &x) {
+        int c= 0;
+        c += apply(*x.base);
+        c += apply(*x.exp);
+        c += SymEngine::down_cast<Derived *>(this)->bvisit(x);
+        return c;
     }
-    void visit(const Symbol &x) {
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    int visit(const Symbol &x) {
+        return SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    void visit(const Integer &x) {
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    int visit(const Integer &x) {
+        return SymEngine::down_cast<Derived *>(this)->bvisit(x);
     }
-    void apply(const Base &b) {
-        accept(b, *this);
+    int apply(const Base &b) {
+        return accept(b, *this);
     }
 };
 
 
 template <class Derived>
-static void accept(const Base &b, BaseWalkVisitor<Derived> &v) {
+static int accept(const Base &b, BaseWalkVisitor<Derived> &v) {
     std::visit(
         visitors{
-            [&v](const BinOp &x) { v.visit(x); return; },
-            [&v](const Pow &x) { v.visit(x); return; },
-            [&v](const Symbol &x) { v.visit(x); return; },
-            [&v](const Integer &x) { v.visit(x); return; },
+            [&v](const BinOp &x) { return v.visit(x); },
+            [&v](const Pow &x) { return v.visit(x); },
+            [&v](const Symbol &x) { return v.visit(x); },
+            [&v](const Integer &x) { return v.visit(x); },
         },
         b.u);
 }
 
 class CountVisitor : public BaseWalkVisitor<CountVisitor>
 {
-    int c_;
 public:
-    CountVisitor() : c_{0} {}
-    template <typename T> void bvisit(const T &x) { }
-    void bvisit(const Symbol &x) { c_ += 1; }
-    int get_count() {
-        return c_;
-    }
+    template <typename T> int bvisit(const T &x) { return 0; }
+    int bvisit(const Symbol &x) { return 1; }
 };
 
 static int count(const Base &b) {
     CountVisitor v;
-    v.apply(b);
-    return v.get_count();
+    return v.apply(b);
 }
 
 
