@@ -116,17 +116,37 @@ static int count2(const Base &b) {
         }, b.u);
 }
 
-class Visitor
+
+
+
+template <class Derived>
+class BaseWalkVisitor
 {
 public:
-    virtual ~Visitor() {};
-    virtual void visit(const BinOp &x) = 0;
-    virtual void visit(const Pow &x) = 0;
-    virtual void visit(const Symbol &x) = 0;
-    virtual void visit(const Integer &x) = 0;
+    void visit(const BinOp &x) {
+        apply(*x.left);
+        apply(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void visit(const Pow &x) {
+        apply(*x.base);
+        apply(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void visit(const Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void visit(const Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const Base &b) {
+        accept(b, *this);
+    }
 };
 
-static void accept(const Base &b, Visitor &v) {
+
+template <class Derived>
+static void accept(const Base &b, BaseWalkVisitor<Derived> &v) {
     std::visit(
         visitors{
             [&v](const BinOp &x) { v.visit(x); return; },
@@ -136,32 +156,6 @@ static void accept(const Base &b, Visitor &v) {
         },
         b.u);
 }
-
-
-template <class Derived>
-class BaseWalkVisitor : public Visitor
-{
-public:
-    virtual void visit(const BinOp &x) {
-        apply(*x.left);
-        apply(*x.right);
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    virtual void visit(const Pow &x) {
-        apply(*x.base);
-        apply(*x.exp);
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    virtual void visit(const Symbol &x) {
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    virtual void visit(const Integer &x) {
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    void apply(const Base &b) {
-        accept(b, *this);
-    }
-};
 
 class CountVisitor : public BaseWalkVisitor<CountVisitor>
 {
@@ -193,7 +187,7 @@ static int count(const Base &b) {
 #define INTEGER(x) al.make_new<Base>(Integer(x))
 //#define PRINT(x) std::cout << (long int)x << std::endl; //x->d.binop.right->type << std::endl
 #define PRINT(x) std::cout << count(*x) << std::endl;
-//#define PRINT(x) std::cout << count2(*x) << std::endl;
+//#define PRINT(x) std::cout << count3(*x) << std::endl;
 
 
 #endif
