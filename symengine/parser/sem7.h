@@ -117,56 +117,39 @@ static int count2(const Base &b) {
 }
 
 
-
-
-template <class Derived>
-class BaseWalkVisitor
-{
-public:
-    int visit(const BinOp &x) {
-        int c=0;
-        c += apply(*x.left);
-        c += apply(*x.right);
-        c += SymEngine::down_cast<Derived *>(this)->bvisit(x);
-        return c;
-    }
-    int visit(const Pow &x) {
-        int c= 0;
-        c += apply(*x.base);
-        c += apply(*x.exp);
-        c += SymEngine::down_cast<Derived *>(this)->bvisit(x);
-        return c;
-    }
-    int visit(const Symbol &x) {
-        return SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    int visit(const Integer &x) {
-        return SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    int apply(const Base &b) {
-        return accept(b, *this);
-    }
-};
-
-
-template <class Derived>
-static int accept(const Base &b, BaseWalkVisitor<Derived> &v) {
+static int accept(const Base &b, int i) {
     std::visit(
         visitors{
-            [&v](const BinOp &x) { return v.visit(x); },
-            [&v](const Pow &x) { return v.visit(x); },
-            [&v](const Symbol &x) { return v.visit(x); },
-            [&v](const Integer &x) { return v.visit(x); },
+            [&i](const BinOp &x) {
+                int c=0;
+                c += accept(*x.left, i);
+                c += accept(*x.right, i);
+                return c;
+                },
+            [&i](const Pow &x) {
+            int c= 0;
+            c += accept(*x.base, i);
+            c += accept(*x.exp, i);
+            return c;
+                },
+            [](const Symbol &x) { return 1; },
+            [](const Integer &x) { return 0; },
         },
         b.u);
 }
 
-class CountVisitor : public BaseWalkVisitor<CountVisitor>
+
+class CountVisitor
 {
 public:
-    template <typename T> int bvisit(const T &x) { return 0; }
-    int bvisit(const Symbol &x) { return 1; }
+    inline int apply(const Base &b) {
+        int i = 5;
+        return accept(b, i);
+    }
 };
+
+
+
 
 static int count(const Base &b) {
     CountVisitor v;
