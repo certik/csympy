@@ -109,17 +109,35 @@ static Node* make_integer(std::string s) {
     return n;
 }
 
-class Visitor
+
+
+template <class Derived>
+class BaseWalkVisitor
 {
 public:
-    virtual ~Visitor() {};
-    virtual void visit(const BinOp &x) = 0;
-    virtual void visit(const Pow &x) = 0;
-    virtual void visit(const Symbol &x) = 0;
-    virtual void visit(const Integer &x) = 0;
+    void visit(const BinOp &x) {
+        apply(*x.left);
+        apply(*x.right);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void visit(const Pow &x) {
+        apply(*x.base);
+        apply(*x.exp);
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void visit(const Symbol &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void visit(const Integer &x) {
+        SymEngine::down_cast<Derived *>(this)->bvisit(x);
+    }
+    void apply(const Node &b) {
+        accept(b, *this);
+    }
 };
 
-static void accept(const Node &x, Visitor &v) {
+template <class Derived>
+static void accept(const Node &x, BaseWalkVisitor<Derived> &v) {
     switch (x.type) {
         case nt_BinOp: { v.visit(x.d.binop); return; }
         case nt_Pow: { v.visit(x.d.pow); return; }
@@ -127,31 +145,6 @@ static void accept(const Node &x, Visitor &v) {
         case nt_Integer: { v.visit(x.d.integer); return; }
     }
 }
-
-template <class Derived>
-class BaseWalkVisitor : public Visitor
-{
-public:
-    virtual void visit(const BinOp &x) {
-        apply(*x.left);
-        apply(*x.right);
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    virtual void visit(const Pow &x) {
-        apply(*x.base);
-        apply(*x.exp);
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    virtual void visit(const Symbol &x) {
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    virtual void visit(const Integer &x) {
-        SymEngine::down_cast<Derived *>(this)->bvisit(x);
-    }
-    void apply(const Node &b) {
-        accept(b, *this);
-    }
-};
 
 class CountVisitor : public BaseWalkVisitor<CountVisitor>
 {
