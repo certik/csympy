@@ -33,6 +33,10 @@ total: 132ms => count 15ms
 C++2a
 construction: 116ms
 total: 126ms => count 10ms
+
+
+gcc 7.4.0 117ms
+clang-6 112ms
 */
 enum NodeType
 {
