@@ -1,7 +1,7 @@
 #ifndef SYMENGINE_PARSER_SEM7_H
 #define SYMENGINE_PARSER_SEM7_H
 
-#include <variant>
+#include "variant.hpp"
 
 /*
    Computer 1: 12ms 139ms          127ms (linear)  195 (default new)
@@ -70,14 +70,14 @@ struct Integer {
 };
 
 struct Base {
-    std::variant<BinOp, Pow, Symbol, Integer> u;
+    mpark::variant<BinOp, Pow, Symbol, Integer> u;
     template<typename A> Base(A &&x) : u{std::move(x)}  {}
 };
 
 
 
 static int count3(const Base &b) {
-    return std::visit(
+    return mpark::visit(
         visitors{
             [](const Symbol &x) { return 1; },
             [](const BinOp &x) {
@@ -96,7 +96,7 @@ static int count3(const Base &b) {
 }
 
 static int count2(const Base &b) {
-    return std::visit([](auto&& x) {
+    return mpark::visit([](auto&& x) {
             using T = std::decay_t<decltype(x)>;
             if constexpr (std::is_same_v<T, Symbol>) {
                 return 1;
@@ -147,7 +147,7 @@ public:
 
 template <class Derived>
 static void accept(const Base &b, BaseWalkVisitor<Derived> &v) {
-    std::visit([&v](auto&& x) { v.visit(x); }, b.u);
+    mpark::visit([&v](auto&& x) { v.visit(x); }, b.u);
 }
 
 class CountVisitor : public BaseWalkVisitor<CountVisitor>
