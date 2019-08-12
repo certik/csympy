@@ -19,6 +19,11 @@ gcc 9.1.0
     total: 127ms => count: 16ms
    */
 
+/*
+   gcc 7.4.0 110ms
+   Clang-6 104ms
+   */
+
 #include "alloc.h"
 #include "symengine/symengine_casts.h"
 

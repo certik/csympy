@@ -20,6 +20,12 @@
     total: 129ms => count: 12ms
     */
 
+/*
+   gcc 7.4.0 120ms
+   clang-6 120ms
+
+   */
+
 #include "alloc.h"
 #include "symengine/symengine_casts.h"
 
