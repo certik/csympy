@@ -21,7 +21,7 @@ gcc 9.1.0
 
 /*
    gcc 7.4.0 110ms
-   Clang-6 104ms
+   clang-6 104ms
    */
 
 #include "alloc.h"
