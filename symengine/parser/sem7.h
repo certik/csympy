@@ -147,14 +147,7 @@ public:
 
 template <class Derived>
 static void accept(const Base &b, BaseWalkVisitor<Derived> &v) {
-    std::visit(
-        visitors{
-            [&v](const BinOp &x) { v.visit(x); return; },
-            [&v](const Pow &x) { v.visit(x); return; },
-            [&v](const Symbol &x) { v.visit(x); return; },
-            [&v](const Integer &x) { v.visit(x); return; },
-        },
-        b.u);
+    std::visit([&v](auto&& x) { v.visit(x); }, b.u);
 }
 
 class CountVisitor : public BaseWalkVisitor<CountVisitor>
